@@ -289,14 +289,21 @@ const SessionChat = () => {
   }, [user, currentSessionId, messages, emotionLog, engine]);
 
   const sendMessage = useCallback(
-    async (overrideInput?: string) => {
+    async (overrideInput?: string, voice?: { url: string; duration: number; waveform: number[] }) => {
       const text = overrideInput ?? input;
-      if (!text.trim() || isThinking || !currentSessionId) return;
+      // Voice with empty transcript still allowed; otherwise need text
+      if (!voice && !text.trim()) return;
+      if (isThinking || !currentSessionId) return;
 
       userScrolledRef.current = false;
-      const userContent = text.trim();
+      const transcript = (text || '').trim();
+      // Content for AI / memory uses the transcript only; storage adds voice metadata
+      const userContentForAI = transcript || '[Voice message]';
+      const userContentForStore = voice
+        ? encodeVoiceContent({ url: voice.url, duration: voice.duration, waveform: voice.waveform, transcript })
+        : transcript;
       const userMsg: DisplayMessage = {
-        id: `u-${Date.now()}`, role: 'user', content: userContent, ts: Date.now(),
+        id: `u-${Date.now()}`, role: 'user', content: userContentForStore, ts: Date.now(),
       };
 
       setMessages((prev) => [...prev, userMsg]);
