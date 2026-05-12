@@ -395,6 +395,26 @@ const SessionChat = () => {
             sound.playMessageChime();
             speak(fullResponse);
             await saveMessage('assistant', fullResponse, currentSessionId);
+
+            // ── Reflection layer: emotionally-meaningful follow-up bubble ──
+            const decision = shouldReflect(userContentForAI, emotion);
+            if (decision.trigger && fullResponse.length > 40) {
+              const delay = 800 + Math.random() * 700; // 0.8–1.5s
+              setTimeout(async () => {
+                const reflection = await fetchReflection({
+                  userMessage: userContentForAI,
+                  assistantMessage: fullResponse,
+                  emotion,
+                });
+                if (!reflection) return;
+                const id = `r-${Date.now()}`;
+                setMessages((prev) => [
+                  ...prev,
+                  { id, role: 'assistant', content: encodeReflection(reflection), ts: Date.now() },
+                ]);
+                await saveMessage('assistant', encodeReflection(reflection), currentSessionId);
+              }, delay);
+            }
           },
           onError: (errMsg) => {
             paced.cancel();
