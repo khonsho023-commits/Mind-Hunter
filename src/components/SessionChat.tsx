@@ -694,6 +694,7 @@ const SessionChat = () => {
           onSend={() => { sound.playSend(); sendMessage(); }}
           onAttach={() => toast(t('chat.uploadComing'))}
           onVoice={handleVoiceTranscript}
+          onVoiceMessage={handleVoiceMessage}
           onMicToggle={() => sound.playMicToggle()}
           disabled={isThinking}
           placeholder={t('chat.placeholder')}
