@@ -95,8 +95,9 @@ function MessageBubble({
         )}
         <div className={`min-w-0 ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-1.5`}>
           {!isUser && (
-            <span className="text-[10px] font-ui tracking-[0.2em] uppercase text-muted-foreground">
-              Dr. Sentinel
+            <span className="text-[10px] font-ui tracking-[0.2em] uppercase text-muted-foreground inline-flex items-center gap-1.5">
+              {reflection && <Sparkles className="w-2.5 h-2.5 text-primary/80" />}
+              {reflection ? 'Reflection' : 'Dr. Sentinel'}
             </span>
           )}
 
