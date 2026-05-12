@@ -53,6 +53,11 @@ function MessageBubble({
   const images = (attachments ?? []).filter((a) => a.type.startsWith('image/'));
   const files = (attachments ?? []).filter((a) => !a.type.startsWith('image/'));
 
+  const reflection = !isUser && isReflection(content);
+  const visibleContent = reflection ? reflectionText(content) : content;
+  const { text: voiceText, voice } = parseVoiceContent(visibleContent);
+  const isVoice = !!voice;
+
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(content);
