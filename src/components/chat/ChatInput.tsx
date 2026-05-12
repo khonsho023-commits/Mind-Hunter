@@ -33,7 +33,7 @@ interface PendingAttachment {
 const ACCEPT = 'image/*,application/pdf,text/plain,.txt,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 export default function ChatInput({
-  value, onChange, onSend, onAttach, onVoice, onMicToggle, onAttachmentsChange, disabled, placeholder,
+  value, onChange, onSend, onAttach, onVoice, onVoiceMessage, onMicToggle, onAttachmentsChange, disabled, placeholder,
 }: Props) {
   const { user } = useAuth();
   const ref = useRef<HTMLTextAreaElement>(null);
