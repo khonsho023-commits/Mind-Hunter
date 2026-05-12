@@ -21,6 +21,9 @@ import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 import { useSound } from '@/context/SoundContext';
 import { loadDraft, saveDraft, loadScroll, useSessionScrollMemory } from '@/lib/sessionMemory';
 import { useEmotionalEngine } from '@/hooks/useEmotionalEngine';
+import { uploadVoiceMessage, encodeVoiceContent, encodeReflection } from '@/lib/voice/upload';
+import { shouldReflect, fetchReflection } from '@/lib/reflection';
+import type { VoiceRecording } from '@/lib/voice/recorder';
 
 interface DisplayMessage {
   id: string;
@@ -156,7 +159,13 @@ const SessionChat = () => {
           }));
           setMessages(display);
           setChatHistory(
-            msgs.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+            msgs
+              .filter((m) => !m.content.startsWith('\u0001REFLECT\u0001'))
+              .map((m) => {
+                // strip voice metadata so AI only sees the transcript
+                const c = m.content.split('\u0001VOICE\u0001')[0] || '[Voice message]';
+                return { role: m.role as 'user' | 'assistant', content: c };
+              }),
           );
           if (currentSessionId && restoredScrollRef.current !== currentSessionId) {
             restoredScrollRef.current = currentSessionId;
@@ -286,29 +295,36 @@ const SessionChat = () => {
   }, [user, currentSessionId, messages, emotionLog, engine]);
 
   const sendMessage = useCallback(
-    async (overrideInput?: string) => {
+    async (overrideInput?: string, voice?: { url: string; duration: number; waveform: number[] }) => {
       const text = overrideInput ?? input;
-      if (!text.trim() || isThinking || !currentSessionId) return;
+      // Voice with empty transcript still allowed; otherwise need text
+      if (!voice && !text.trim()) return;
+      if (isThinking || !currentSessionId) return;
 
       userScrolledRef.current = false;
-      const userContent = text.trim();
+      const transcript = (text || '').trim();
+      // Content for AI / memory uses the transcript only; storage adds voice metadata
+      const userContentForAI = transcript || '[Voice message]';
+      const userContentForStore = voice
+        ? encodeVoiceContent({ url: voice.url, duration: voice.duration, waveform: voice.waveform, transcript })
+        : transcript;
       const userMsg: DisplayMessage = {
-        id: `u-${Date.now()}`, role: 'user', content: userContent, ts: Date.now(),
+        id: `u-${Date.now()}`, role: 'user', content: userContentForStore, ts: Date.now(),
       };
 
       setMessages((prev) => [...prev, userMsg]);
       setInput('');
       setIsThinking(true);
 
-      const msgId = await saveMessage('user', userContent, currentSessionId);
+      const msgId = await saveMessage('user', userContentForStore, currentSessionId);
 
-      if (detectCrisis(userContent)) {
+      if (detectCrisis(userContentForAI)) {
         setShowCrisis(true);
         setIsThinking(false);
         return;
       }
 
-      const emotion = analyzeEmotion(userContent);
+      const emotion = analyzeEmotion(userContentForAI);
       setCurrentEmotion(emotion);
       setEmotionLog((prev) => [...prev, emotion]);
 
@@ -325,7 +341,7 @@ const SessionChat = () => {
       let preparedRecall: typeof memories = memories;
       if (user) {
         try {
-          const prepared = await engine.prepareTurn(user.id, userContent, emotion);
+          const prepared = await engine.prepareTurn(user.id, userContentForAI, emotion);
           preparedAddenda = prepared.systemAddenda;
           preparedRecall = prepared.recall as typeof memories;
         } catch (e) { console.warn('prepareTurn', e); }
@@ -335,14 +351,14 @@ const SessionChat = () => {
           sessionId: currentSessionId,
           messageId: msgId,
           position: messages.length,
-          text: userContent,
+          text: userContentForAI,
           emotion,
         }).then(({ moment }) => {
           if (moment?.moment_type === 'breakthrough') breakthroughRef.current = true;
         }).catch(() => {});
       }
 
-      const newHistory: ChatMsg[] = [...chatHistory, { role: 'user', content: userContent }];
+      const newHistory: ChatMsg[] = [...chatHistory, { role: 'user', content: userContentForAI }];
       setChatHistory(newHistory);
 
       const assistantId = `a-${Date.now()}`;
@@ -385,6 +401,26 @@ const SessionChat = () => {
             sound.playMessageChime();
             speak(fullResponse);
             await saveMessage('assistant', fullResponse, currentSessionId);
+
+            // ── Reflection layer: emotionally-meaningful follow-up bubble ──
+            const decision = shouldReflect(userContentForAI, emotion);
+            if (decision.trigger && fullResponse.length > 40) {
+              const delay = 800 + Math.random() * 700; // 0.8–1.5s
+              setTimeout(async () => {
+                const reflection = await fetchReflection({
+                  userMessage: userContentForAI,
+                  assistantMessage: fullResponse,
+                  emotion,
+                });
+                if (!reflection) return;
+                const id = `r-${Date.now()}`;
+                setMessages((prev) => [
+                  ...prev,
+                  { id, role: 'assistant', content: encodeReflection(reflection), ts: Date.now() },
+                ]);
+                await saveMessage('assistant', encodeReflection(reflection), currentSessionId);
+              }, delay);
+            }
           },
           onError: (errMsg) => {
             paced.cancel();
@@ -410,6 +446,22 @@ const SessionChat = () => {
   const handleVoiceTranscript = useCallback(
     (text: string) => sendMessage(text),
     [sendMessage],
+  );
+
+  const handleVoiceMessage = useCallback(
+    async (rec: VoiceRecording, transcript: string) => {
+      if (!user || !currentSessionId) return;
+      try {
+        const uploaded = await uploadVoiceMessage(rec.blob, user.id, rec.duration, rec.waveform);
+        await sendMessage(transcript, {
+          url: uploaded.url, duration: uploaded.duration, waveform: uploaded.waveform,
+        });
+      } catch (e) {
+        console.warn('voice upload', e);
+        toast.error('Voice upload failed');
+      }
+    },
+    [user, currentSessionId, sendMessage],
   );
 
   const onNewChat = () => {
@@ -648,6 +700,7 @@ const SessionChat = () => {
           onSend={() => { sound.playSend(); sendMessage(); }}
           onAttach={() => toast(t('chat.uploadComing'))}
           onVoice={handleVoiceTranscript}
+          onVoiceMessage={handleVoiceMessage}
           onMicToggle={() => sound.playMicToggle()}
           disabled={isThinking}
           placeholder={t('chat.placeholder')}

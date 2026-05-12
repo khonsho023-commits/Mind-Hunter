@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, DragEvent, ClipboardEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Paperclip, Send, X, FileText, Image as ImageIcon, Loader2, RotateCw, AlertCircle } from 'lucide-react';
-import VoiceInput from '@/components/VoiceInput';
+import VoiceRecorderButton from '@/components/voice/VoiceRecorderButton';
 import { useAuth } from '@/context/AuthContext';
 import { uploadChatAttachment, isAccepted, UploadedAttachment } from '@/lib/uploadAttachment';
+import type { VoiceRecording } from '@/lib/voice/recorder';
 import { toast } from 'sonner';
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
   onSend: () => void;
   onAttach: () => void;
   onVoice: (text: string) => void;
+  onVoiceMessage?: (rec: VoiceRecording, transcript: string) => void;
   onMicToggle?: () => void;
   onAttachmentsChange?: (attachments: UploadedAttachment[]) => void;
   disabled?: boolean;
@@ -31,7 +33,7 @@ interface PendingAttachment {
 const ACCEPT = 'image/*,application/pdf,text/plain,.txt,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 export default function ChatInput({
-  value, onChange, onSend, onAttach, onVoice, onMicToggle, onAttachmentsChange, disabled, placeholder,
+  value, onChange, onSend, onAttach, onVoice, onVoiceMessage, onMicToggle, onAttachmentsChange, disabled, placeholder,
 }: Props) {
   const { user } = useAuth();
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -260,7 +262,14 @@ export default function ChatInput({
           />
 
           <div className="flex-shrink-0">
-            <VoiceInput onTranscript={onVoice} disabled={disabled} onToggle={onMicToggle} />
+            <VoiceRecorderButton
+              disabled={disabled}
+              onRecorded={(rec, transcript) => {
+                onMicToggle?.();
+                if (onVoiceMessage) onVoiceMessage(rec, transcript);
+                else if (transcript) onVoice(transcript);
+              }}
+            />
           </div>
 
           <motion.button
