@@ -262,7 +262,14 @@ export default function ChatInput({
           />
 
           <div className="flex-shrink-0">
-            <VoiceInput onTranscript={onVoice} disabled={disabled} onToggle={onMicToggle} />
+            <VoiceRecorderButton
+              disabled={disabled}
+              onRecorded={(rec, transcript) => {
+                onMicToggle?.();
+                if (onVoiceMessage) onVoiceMessage(rec, transcript);
+                else if (transcript) onVoice(transcript);
+              }}
+            />
           </div>
 
           <motion.button
