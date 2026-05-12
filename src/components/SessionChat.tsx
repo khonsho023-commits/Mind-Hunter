@@ -159,7 +159,13 @@ const SessionChat = () => {
           }));
           setMessages(display);
           setChatHistory(
-            msgs.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+            msgs
+              .filter((m) => !m.content.startsWith('\u0001REFLECT\u0001'))
+              .map((m) => {
+                // strip voice metadata so AI only sees the transcript
+                const c = m.content.split('\u0001VOICE\u0001')[0] || '[Voice message]';
+                return { role: m.role as 'user' | 'assistant', content: c };
+              }),
           );
           if (currentSessionId && restoredScrollRef.current !== currentSessionId) {
             restoredScrollRef.current = currentSessionId;
