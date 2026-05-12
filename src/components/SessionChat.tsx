@@ -310,7 +310,7 @@ const SessionChat = () => {
       setInput('');
       setIsThinking(true);
 
-      const msgId = await saveMessage('user', userContentForAI, currentSessionId);
+      const msgId = await saveMessage('user', userContentForStore, currentSessionId);
 
       if (detectCrisis(userContentForAI)) {
         setShowCrisis(true);
