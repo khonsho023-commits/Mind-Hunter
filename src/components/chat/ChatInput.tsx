@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, DragEvent, ClipboardEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Paperclip, Send, X, FileText, Image as ImageIcon, Loader2, RotateCw, AlertCircle } from 'lucide-react';
-import VoiceInput from '@/components/VoiceInput';
+import VoiceRecorderButton from '@/components/voice/VoiceRecorderButton';
 import { useAuth } from '@/context/AuthContext';
 import { uploadChatAttachment, isAccepted, UploadedAttachment } from '@/lib/uploadAttachment';
+import type { VoiceRecording } from '@/lib/voice/recorder';
 import { toast } from 'sonner';
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
   onSend: () => void;
   onAttach: () => void;
   onVoice: (text: string) => void;
+  onVoiceMessage?: (rec: VoiceRecording, transcript: string) => void;
   onMicToggle?: () => void;
   onAttachmentsChange?: (attachments: UploadedAttachment[]) => void;
   disabled?: boolean;
