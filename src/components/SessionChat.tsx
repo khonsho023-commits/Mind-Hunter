@@ -21,6 +21,9 @@ import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 import { useSound } from '@/context/SoundContext';
 import { loadDraft, saveDraft, loadScroll, useSessionScrollMemory } from '@/lib/sessionMemory';
 import { useEmotionalEngine } from '@/hooks/useEmotionalEngine';
+import { uploadVoiceMessage, encodeVoiceContent, encodeReflection } from '@/lib/voice/upload';
+import { shouldReflect, fetchReflection } from '@/lib/reflection';
+import type { VoiceRecording } from '@/lib/voice/recorder';
 
 interface DisplayMessage {
   id: string;
