@@ -310,15 +310,15 @@ const SessionChat = () => {
       setInput('');
       setIsThinking(true);
 
-      const msgId = await saveMessage('user', userContent, currentSessionId);
+      const msgId = await saveMessage('user', userContentForAI, currentSessionId);
 
-      if (detectCrisis(userContent)) {
+      if (detectCrisis(userContentForAI)) {
         setShowCrisis(true);
         setIsThinking(false);
         return;
       }
 
-      const emotion = analyzeEmotion(userContent);
+      const emotion = analyzeEmotion(userContentForAI);
       setCurrentEmotion(emotion);
       setEmotionLog((prev) => [...prev, emotion]);
 
@@ -335,7 +335,7 @@ const SessionChat = () => {
       let preparedRecall: typeof memories = memories;
       if (user) {
         try {
-          const prepared = await engine.prepareTurn(user.id, userContent, emotion);
+          const prepared = await engine.prepareTurn(user.id, userContentForAI, emotion);
           preparedAddenda = prepared.systemAddenda;
           preparedRecall = prepared.recall as typeof memories;
         } catch (e) { console.warn('prepareTurn', e); }
@@ -345,14 +345,14 @@ const SessionChat = () => {
           sessionId: currentSessionId,
           messageId: msgId,
           position: messages.length,
-          text: userContent,
+          text: userContentForAI,
           emotion,
         }).then(({ moment }) => {
           if (moment?.moment_type === 'breakthrough') breakthroughRef.current = true;
         }).catch(() => {});
       }
 
-      const newHistory: ChatMsg[] = [...chatHistory, { role: 'user', content: userContent }];
+      const newHistory: ChatMsg[] = [...chatHistory, { role: 'user', content: userContentForAI }];
       setChatHistory(newHistory);
 
       const assistantId = `a-${Date.now()}`;
