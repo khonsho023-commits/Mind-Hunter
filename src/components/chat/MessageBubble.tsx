@@ -1,9 +1,11 @@
 import { memo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { FileText, Image as ImageIcon, Download, Copy, Check, RotateCcw, Trash2 } from 'lucide-react';
+import { FileText, Image as ImageIcon, Download, Copy, Check, RotateCcw, Trash2, Sparkles } from 'lucide-react';
 import { EmotionState } from '@/context/AppContext';
 import Lightbox from './Lightbox';
+import VoicePlayer from '@/components/voice/VoicePlayer';
+import { parseVoiceContent, isReflection, reflectionText } from '@/lib/voice/upload';
 import { toast } from 'sonner';
 
 export interface MessageAttachment {
