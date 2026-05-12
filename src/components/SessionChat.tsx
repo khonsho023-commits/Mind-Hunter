@@ -442,6 +442,22 @@ const SessionChat = () => {
     [sendMessage],
   );
 
+  const handleVoiceMessage = useCallback(
+    async (rec: VoiceRecording, transcript: string) => {
+      if (!user || !currentSessionId) return;
+      try {
+        const uploaded = await uploadVoiceMessage(rec.blob, user.id, rec.duration, rec.waveform);
+        await sendMessage(transcript, {
+          url: uploaded.url, duration: uploaded.duration, waveform: uploaded.waveform,
+        });
+      } catch (e) {
+        console.warn('voice upload', e);
+        toast.error('Voice upload failed');
+      }
+    },
+    [user, currentSessionId, sendMessage],
+  );
+
   const onNewChat = () => {
     setMessages([]);
     setChatHistory([]);
