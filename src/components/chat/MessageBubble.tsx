@@ -148,33 +148,50 @@ function MessageBubble({
             </div>
           )}
 
-          {(content || (!images.length && !files.length)) && (
+          {(visibleContent || (!images.length && !files.length)) && (
             <div
-              className={`relative rounded-2xl px-5 py-3.5 transition-shadow ${
-                isUser
+              className={`relative rounded-2xl transition-shadow ${isVoice ? 'px-3 py-2.5' : 'px-5 py-3.5'} ${
+                reflection
+                  ? 'border border-primary/25 bg-primary/[0.04] backdrop-blur-md shadow-[0_0_30px_-6px_hsl(var(--gold)/0.35)]'
+                  : isUser
                   ? 'bg-secondary/60 border border-border/60 text-foreground'
                   : 'glass border border-primary/20 text-foreground'
               } ${
-                streaming ? 'shadow-[0_0_28px_-6px_hsl(var(--gold)/0.5)]' : 'shadow-[0_0_20px_hsl(var(--gold)/0.06)]'
+                streaming ? 'shadow-[0_0_28px_-6px_hsl(var(--gold)/0.5)]' : reflection ? '' : 'shadow-[0_0_20px_hsl(var(--gold)/0.06)]'
               }`}
             >
-              <div className="text-sm font-body leading-relaxed prose prose-sm prose-invert max-w-none prose-p:my-2 prose-p:leading-relaxed prose-ul:my-2 prose-li:my-0.5 prose-strong:text-primary prose-code:text-primary prose-code:bg-secondary/60 prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:before:hidden prose-code:after:hidden">
-                {content ? (
-                  <>
-                    <ReactMarkdown>{content}</ReactMarkdown>
-                    {streaming && (
-                      <motion.span
-                        aria-hidden
-                        className="inline-block w-[2px] h-[1em] bg-primary align-text-bottom ml-0.5 rounded-sm"
-                        animate={{ opacity: [1, 0.2, 1] }}
-                        transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <span className="opacity-50">…</span>
-                )}
-              </div>
+              {isVoice && voice ? (
+                <div className="flex flex-col gap-1.5">
+                  <VoicePlayer url={voice.url} duration={voice.duration} waveform={voice.waveform} />
+                  {voiceText && voiceText !== '[Voice message]' && (
+                    <p className="text-[11px] font-ui italic text-muted-foreground/80 px-1 line-clamp-3">
+                      “{voiceText}”
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className={`text-sm font-body leading-relaxed prose prose-sm prose-invert max-w-none prose-p:my-2 prose-p:leading-relaxed prose-ul:my-2 prose-li:my-0.5 prose-strong:text-primary prose-code:text-primary prose-code:bg-secondary/60 prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:before:hidden prose-code:after:hidden ${
+                    reflection ? 'italic text-foreground/85' : ''
+                  }`}
+                >
+                  {visibleContent ? (
+                    <>
+                      <ReactMarkdown>{visibleContent}</ReactMarkdown>
+                      {streaming && (
+                        <motion.span
+                          aria-hidden
+                          className="inline-block w-[2px] h-[1em] bg-primary align-text-bottom ml-0.5 rounded-sm"
+                          animate={{ opacity: [1, 0.2, 1] }}
+                          transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <span className="opacity-50">…</span>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
