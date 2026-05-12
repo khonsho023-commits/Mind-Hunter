@@ -1,0 +1,75 @@
+{
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "send": "إرسال",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "back": "رجوع",
+    "continue": "متابعة",
+    "newSession": "جلسة جديدة",
+    "newChat": "محادثة جديدة",
+    "signOut": "تسجيل الخروج"
+  },
+  "nav": {
+    "dashboard": "اللوحة الرئيسية",
+    "insights": "الرؤى",
+    "history": "السجل",
+    "settings": "الإعدادات",
+    "profile": "الملف الشخصي",
+    "emergency": "الطوارئ",
+    "startSession": "بدء جلسة"
+  },
+  "dashboard": {
+    "morning": "صباح الخير",
+    "afternoon": "مساء الخير",
+    "evening": "مساء الخير",
+    "welcomeTitle": "مرحباً بك في",
+    "sanctuary": "ملاذك",
+    "welcomeDesc": "مساحة هادئة للتأمل وفهم مشاعرك والنمو. عندما تكون مستعداً، ابدأ جلسة جديدة — د. سنتينل هنا للاستماع.",
+    "viewInsights": "عرض الرؤى",
+    "totalSessions": "إجمالي الجلسات",
+    "currentMood": "المزاج الحالي",
+    "avgIntensity": "متوسط الشدة",
+    "quickActions": "إجراءات سريعة",
+    "newSessionDesc": "ابدأ الحديث",
+    "history": "السجل",
+    "historyDesc": "الجلسات السابقة",
+    "breathing": "التنفس",
+    "breathingDesc": "تقنية 4-7-8",
+    "emergencyDesc": "دعم الأزمات",
+    "recentSessions": "الجلسات الأخيرة",
+    "viewAll": "عرض الكل ←",
+    "noSessions": "لا توجد جلسات بعد — ابدأ جلستك الأولى.",
+    "beginNow": "ابدأ الآن"
+  },
+  "chat": {
+    "placeholder": "شارك ما يدور في ذهنك...",
+    "thinking": "د. سنتينل يفكر",
+    "memoryActive": "الذاكرة نشطة",
+    "highDistress": "تم اكتشاف ضائقة عالية. لست وحدك — الدعم الإضافي هنا.",
+    "talkToSpecialist": "تحدث مع متخصص حقيقي",
+    "openEmergency": "فتح الدعم الطارئ ←",
+    "uploadComing": "رفع الملفات قريباً",
+    "threads": "المحادثات",
+    "currentChat": "المحادثة الحالية"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "خصص تجربتك",
+    "sound": "الصوت",
+    "masterVolume": "الصوت الرئيسي",
+    "aiBehavior": "سلوك الذكاء الاصطناعي",
+    "language": "اللغة",
+    "languageDesc": "اختر لغتك المفضلة",
+    "privacy": "الخصوصية والبيانات",
+    "exportData": "تصدير بياناتي",
+    "deleteAll": "حذف جميع الجلسات",
+    "account": "الحساب"
+  },
+  "emergency": {
+    "title": "الدعم الطارئ",
+    "subtitle": "إذا كنت في خطر فوري، يرجى التواصل مع شخص حقيقي عبر الخطوط الساخنة أدناه. هذه المساحة هنا لمساعدتك على التنفس والبقاء متماسكاً.",
+    "immediateHelp": "مساعدة فورية",
+    "backToDashboard": "العودة إلى اللوحة"
+  }
+}

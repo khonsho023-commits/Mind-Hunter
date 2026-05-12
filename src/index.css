@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@layer base {
+  :root {
+    --background: 20 12% 8%;
+    --foreground: 38 30% 90%;
+
+    --card: 20 15% 12%;
+    --card-foreground: 38 30% 90%;
+
+    --popover: 20 15% 10%;
+    --popover-foreground: 38 30% 90%;
+
+    --primary: 38 50% 55%;
+    --primary-foreground: 20 12% 8%;
+
+    --secondary: 20 18% 18%;
+    --secondary-foreground: 38 30% 85%;
+
+    --muted: 20 10% 15%;
+    --muted-foreground: 30 15% 55%;
+
+    --accent: 38 60% 45%;
+    --accent-foreground: 20 12% 8%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 15% 20%;
+    --input: 30 15% 20%;
+    --ring: 38 50% 55%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --gold: 38 50% 55%;
+    --gold-light: 38 60% 70%;
+    --gold-dark: 38 40% 35%;
+    --chocolate: 20 30% 15%;
+    --chocolate-deep: 20 25% 10%;
+    --coffee: 25 20% 22%;
+    --warmth: 30 25% 25%;
+
+    --glass-bg: 20 15% 12% / 0.6;
+    --glass-border: 38 50% 55% / 0.15;
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+    --gradient-gold: linear-gradient(135deg, hsl(38 50% 55%), hsl(38 60% 70%));
+    --gradient-dark: linear-gradient(180deg, hsl(20 12% 8%), hsl(20 25% 5%));
+    --gradient-warm: linear-gradient(135deg, hsl(20 30% 15%), hsl(25 20% 22%));
+
+    --font-display: 'Cinzel', serif;
+    --font-body: 'Raleway', sans-serif;
+    --font-ui: 'Inter', sans-serif;
+
+    --sidebar-background: 20 15% 10%;
+    --sidebar-foreground: 38 30% 85%;
+    --sidebar-primary: 38 50% 55%;
+    --sidebar-primary-foreground: 20 12% 8%;
+    --sidebar-accent: 20 18% 18%;
+    --sidebar-accent-foreground: 38 30% 85%;
+    --sidebar-border: 30 15% 20%;
+    --sidebar-ring: 38 50% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer components {
+  .glass {
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-strong {
+    background: hsl(20 15% 12% / 0.85);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: var(--glass-shadow);
+  }
+
+  .gold-glow {
+    box-shadow: 0 0 20px hsl(38 50% 55% / 0.3), 0 0 60px hsl(38 50% 55% / 0.1);
+  }
+
+  .gold-text {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px hsl(38 50% 55% / 0.5), 0 0 40px hsl(38 50% 55% / 0.2);
+  }
+
+  .warm-vignette {
+    box-shadow: inset 0 0 150px hsl(20 30% 5% / 0.8);
+  }
+
+  .particle-bg {
+    background-image: radial-gradient(circle at 20% 50%, hsl(38 50% 55% / 0.03) 0%, transparent 50%),
+                       radial-gradient(circle at 80% 20%, hsl(38 60% 70% / 0.03) 0%, transparent 50%),
+                       radial-gradient(circle at 50% 80%, hsl(25 20% 22% / 0.05) 0%, transparent 50%);
+  }
+
+  .sentinel-btn {
+    @apply relative overflow-hidden px-8 py-3 rounded-lg font-medium tracking-wider uppercase text-sm;
+    font-family: var(--font-ui);
+    background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(var(--gold-dark)) 100%);
+    color: hsl(var(--background));
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .sentinel-btn:hover {
+    box-shadow: 0 0 30px hsl(38 50% 55% / 0.4), 0 0 60px hsl(38 50% 55% / 0.2);
+    transform: translateY(-2px);
+  }
+
+  .sentinel-btn-outline {
+    @apply relative overflow-hidden px-8 py-3 rounded-lg font-medium tracking-wider uppercase text-sm;
+    font-family: var(--font-ui);
+    background: transparent;
+    border: 1px solid hsl(var(--gold) / 0.5);
+    color: hsl(var(--gold));
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .sentinel-btn-outline:hover {
+    background: hsl(var(--gold) / 0.1);
+    border-color: hsl(var(--gold));
+    box-shadow: 0 0 20px hsl(38 50% 55% / 0.2);
+  }
+
+  .avatar-ring {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .avatar-ring:hover, .avatar-ring.selected {
+    border-color: hsl(var(--gold));
+    box-shadow: 0 0 15px hsl(38 50% 55% / 0.4);
+  }
+
+  .speech-bubble {
+    @apply glass rounded-2xl p-5 relative;
+    border-left: 3px solid hsl(var(--gold) / 0.5);
+  }
+
+  .chat-input-area {
+    @apply glass-strong rounded-2xl p-4;
+    border: 1px solid hsl(var(--gold) / 0.2);
+  }
+
+  .emotion-badge {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+    font-family: var(--font-ui);
+    background: hsl(var(--gold) / 0.15);
+    color: hsl(var(--gold-light));
+    border: 1px solid hsl(var(--gold) / 0.3);
+  }
+  .breathing-pulse {
+    animation: breathe 5s ease-in-out infinite;
+  }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.008); }
+}
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--gold) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--gold) / 0.5);
+}

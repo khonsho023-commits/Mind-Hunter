@@ -1,0 +1,75 @@
+{
+  "common": {
+    "loading": "Caricamento...",
+    "send": "Invia",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "back": "Indietro",
+    "continue": "Continua",
+    "newSession": "Nuova sessione",
+    "newChat": "Nuova chat",
+    "signOut": "Esci"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "insights": "Analisi",
+    "history": "Cronologia",
+    "settings": "Impostazioni",
+    "profile": "Profilo",
+    "emergency": "Emergenza",
+    "startSession": "Avvia sessione"
+  },
+  "dashboard": {
+    "morning": "Buongiorno",
+    "afternoon": "Buon pomeriggio",
+    "evening": "Buonasera",
+    "welcomeTitle": "Benvenuto nel tuo",
+    "sanctuary": "santuario",
+    "welcomeDesc": "Uno spazio tranquillo per riflettere, capire le tue emozioni e crescere. Quando sei pronto, inizia una nuova sessione — Dr. Sentinel è qui per ascoltarti.",
+    "viewInsights": "Visualizza analisi",
+    "totalSessions": "Sessioni totali",
+    "currentMood": "Stato attuale",
+    "avgIntensity": "Intensità media",
+    "quickActions": "Azioni rapide",
+    "newSessionDesc": "Inizia a parlare",
+    "history": "Cronologia",
+    "historyDesc": "Sessioni passate",
+    "breathing": "Respirazione",
+    "breathingDesc": "Tecnica 4-7-8",
+    "emergencyDesc": "Supporto crisi",
+    "recentSessions": "Sessioni recenti",
+    "viewAll": "Vedi tutto →",
+    "noSessions": "Nessuna sessione — inizia la prima.",
+    "beginNow": "Inizia ora"
+  },
+  "chat": {
+    "placeholder": "Condividi ciò che hai in mente...",
+    "thinking": "Dr. Sentinel sta pensando",
+    "memoryActive": "Memoria attiva",
+    "highDistress": "Alta angoscia rilevata. Non sei solo — il supporto è qui.",
+    "talkToSpecialist": "Parla con uno specialista",
+    "openEmergency": "Apri supporto d'emergenza →",
+    "uploadComing": "Caricamento file in arrivo",
+    "threads": "Conversazioni",
+    "currentChat": "Chat corrente"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "subtitle": "Personalizza la tua esperienza",
+    "sound": "Audio",
+    "masterVolume": "Volume principale",
+    "aiBehavior": "Comportamento IA",
+    "language": "Lingua",
+    "languageDesc": "Scegli la tua lingua preferita",
+    "privacy": "Privacy e dati",
+    "exportData": "Esporta i miei dati",
+    "deleteAll": "Elimina tutte le sessioni",
+    "account": "Account"
+  },
+  "emergency": {
+    "title": "Supporto d'emergenza",
+    "subtitle": "Se sei in pericolo immediato, contatta un essere umano tramite le linee di aiuto qui sotto. Questo spazio è qui per aiutarti a respirare e restare ancorato.",
+    "immediateHelp": "Aiuto immediato",
+    "backToDashboard": "Torna alla dashboard"
+  }
+}

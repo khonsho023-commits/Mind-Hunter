@@ -1,0 +1,78 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "send": "Send",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back",
+    "continue": "Continue",
+    "newSession": "New Session",
+    "newChat": "New Chat",
+    "signOut": "Sign Out"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "insights": "Insights",
+    "history": "History",
+    "constellation": "Constellation",
+    "dreamscape": "Dreamscape",
+    "voice": "Voice",
+    "settings": "Settings",
+    "profile": "Profile",
+    "emergency": "Emergency",
+    "startSession": "Start Session"
+  },
+  "dashboard": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "welcomeTitle": "Welcome to your",
+    "sanctuary": "sanctuary",
+    "welcomeDesc": "A quiet space to reflect, understand your emotions, and grow. When you're ready, step into a new session — Dr. Sentinel is here to listen.",
+    "viewInsights": "View Insights",
+    "totalSessions": "Total Sessions",
+    "currentMood": "Current Mood",
+    "avgIntensity": "Avg Intensity",
+    "quickActions": "Quick Actions",
+    "newSessionDesc": "Start talking",
+    "history": "History",
+    "historyDesc": "Past sessions",
+    "breathing": "Breathing",
+    "breathingDesc": "4-7-8 technique",
+    "emergencyDesc": "Crisis support",
+    "recentSessions": "Recent Sessions",
+    "viewAll": "View all →",
+    "noSessions": "No sessions yet — start your first one.",
+    "beginNow": "Begin Now"
+  },
+  "chat": {
+    "placeholder": "Share what's on your mind...",
+    "thinking": "Dr. Sentinel is thinking",
+    "memoryActive": "Memory active",
+    "highDistress": "High distress detected. You're not alone — extra support is here.",
+    "talkToSpecialist": "Talk to a real specialist",
+    "openEmergency": "Open Emergency Support →",
+    "uploadComing": "File upload coming soon",
+    "threads": "Threads",
+    "currentChat": "Current Chat"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Personalize your experience",
+    "sound": "Sound",
+    "masterVolume": "Master Volume",
+    "aiBehavior": "AI Behavior",
+    "language": "Language",
+    "languageDesc": "Choose your preferred language",
+    "privacy": "Privacy & Data",
+    "exportData": "Export My Data",
+    "deleteAll": "Delete All Sessions",
+    "account": "Account"
+  },
+  "emergency": {
+    "title": "Emergency Support",
+    "subtitle": "If you're in immediate danger, please reach out to a real human via the hotlines below. This space is here to help you breathe and stay grounded.",
+    "immediateHelp": "Immediate Help",
+    "backToDashboard": "Back to Dashboard"
+  }
+}
