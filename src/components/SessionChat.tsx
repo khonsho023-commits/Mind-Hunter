@@ -22,7 +22,9 @@ import { useSound } from '@/context/SoundContext';
 import { loadDraft, saveDraft, loadScroll, useSessionScrollMemory } from '@/lib/sessionMemory';
 import { useEmotionalEngine } from '@/hooks/useEmotionalEngine';
 import { uploadVoiceMessage, encodeVoiceContent, encodeReflection } from '@/lib/voice/upload';
+import { generateVoiceReply, uploadAssistantVoice } from '@/lib/voice/voiceReply';
 import { shouldReflect, fetchReflection } from '@/lib/reflection';
+import { useTranslation as useT2 } from 'react-i18next';
 import type { VoiceRecording } from '@/lib/voice/recorder';
 
 interface DisplayMessage {
