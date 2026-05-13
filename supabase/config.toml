@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.reflect]
 verify_jwt = false
+
+[functions.tts-reply]
+verify_jwt = false
