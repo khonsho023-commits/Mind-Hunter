@@ -403,6 +403,34 @@ const SessionChat = () => {
             speak(fullResponse);
             await saveMessage('assistant', fullResponse, currentSessionId);
 
+            // ── AI Voice Reply: shorter paraphrase + ElevenLabs TTS ──
+            (async () => {
+              try {
+                const reply = await generateVoiceReply({
+                  text: fullResponse,
+                  lang: (i18n.language || 'en').split('-')[0],
+                  emotion: emotion?.primary,
+                });
+                if (!reply || !user) return;
+                const url = await uploadAssistantVoice(reply.audioBlob, user.id);
+                if (!url) return;
+                const id = `av-${Date.now()}`;
+                const stored = encodeVoiceContent({
+                  url,
+                  duration: reply.duration,
+                  waveform: reply.waveform,
+                  transcript: reply.paraphrase,
+                });
+                setMessages((prev) => [
+                  ...prev,
+                  { id, role: 'assistant', content: stored, ts: Date.now() },
+                ]);
+                await saveMessage('assistant', stored, currentSessionId);
+              } catch (e) {
+                console.warn('voice reply', e);
+              }
+            })();
+
             // ── Reflection layer: emotionally-meaningful follow-up bubble ──
             const decision = shouldReflect(userContentForAI, emotion);
             if (decision.trigger && fullResponse.length > 40) {
