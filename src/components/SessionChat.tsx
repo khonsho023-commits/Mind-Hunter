@@ -100,7 +100,7 @@ const SessionChat = () => {
   const userScrolledRef = useRef(false);
   const reflectionSentRef = useRef(false);
   const restoredScrollRef = useRef<string | null>(null);
-  const { speak, toggle: toggleTTS, ttsEnabled } = useSpeechSynthesis({ rate: 0.88, pitch: 0.92 });
+  const { speak, toggle: toggleTTS, ttsEnabled } = useSpeechSynthesis({ rate: 0.88, pitch: 0.92, enabled: false });
 
   // Per-session draft persistence
   useEffect(() => {
