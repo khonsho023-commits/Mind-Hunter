@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, Trash2, Send, Square } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { startRecording } from '@/lib/voice/recorder';
 import type { VoiceRecording } from '@/lib/voice/recorder';
 import Waveform from './Waveform';
@@ -8,7 +9,6 @@ import { toast } from 'sonner';
 
 interface Props {
   disabled?: boolean;
-  /** Called after recording stops, before upload. Recorder also returns interim transcript. */
   onRecorded: (rec: VoiceRecording, transcript: string) => void;
 }
 
@@ -20,19 +20,33 @@ type SR = {
   onend: (() => void) | null;
 };
 
-function makeSTT(): SR | null {
+// Map app i18n code → BCP-47 STT locale. Arabic uses Saudi as a strong default
+// (covers MSA + most dialects in browser engines); falls back gracefully.
+const STT_LANG: Record<string, string> = {
+  en: 'en-US',
+  ar: 'ar-SA',
+  es: 'es-ES',
+  fr: 'fr-FR',
+  it: 'it-IT',
+};
+
+function makeSTT(lang: string): SR | null {
   const w = window as unknown as { SpeechRecognition?: new () => SR; webkitSpeechRecognition?: new () => SR };
   const Ctor = w.SpeechRecognition ?? w.webkitSpeechRecognition;
   if (!Ctor) return null;
   const r = new Ctor();
-  r.continuous = true; r.interimResults = true; r.lang = 'en-US';
+  r.continuous = true;
+  r.interimResults = true;
+  r.lang = lang;
   return r;
 }
 
 export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
+  const { i18n } = useTranslation();
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [live, setLive] = useState<number[]>(Array(36).fill(0.05));
+  const [level, setLevel] = useState(0);
   const handleRef = useRef<Awaited<ReturnType<typeof startRecording>> | null>(null);
   const sttRef = useRef<SR | null>(null);
   const transcriptRef = useRef('');
@@ -58,8 +72,10 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
       setRecording(true);
       setElapsed(0);
 
-      // STT in parallel for auto-transcription
-      const stt = makeSTT();
+      // Pick STT language from current i18n locale (preserves punctuation & native script).
+      const base = (i18n.language || 'en').split('-')[0];
+      const sttLang = STT_LANG[base] ?? i18n.language ?? 'en-US';
+      const stt = makeSTT(sttLang);
       if (stt) {
         stt.onresult = (e) => {
           let finalText = ''; let interim = '';
@@ -70,7 +86,7 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
           if (finalText) transcriptRef.current = (transcriptRef.current + ' ' + finalText).trim();
           if (interim && !transcriptRef.current) transcriptRef.current = interim.trim();
         };
-        stt.onerror = () => { /* silent — transcription is best-effort */ };
+        stt.onerror = () => { /* silent — best-effort */ };
         stt.onend = () => { /* may auto-stop; ok */ };
         try { stt.start(); sttRef.current = stt; } catch { /* */ }
       }
@@ -80,7 +96,7 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
         if (!hh) return;
         setElapsed(hh.duration());
         setLive(hh.getLiveWave());
-        // hard cap at 5 minutes
+        setLevel(hh.getLevel());
         if (hh.duration() > 300) finish();
         else rafRef.current = requestAnimationFrame(tick);
       };
@@ -113,8 +129,9 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
     onRecorded(rec, transcriptRef.current);
   };
 
-  // Hold-to-record: pointer down/up. Tap-to-toggle still works because a quick
-  // pointerup with elapsed < 0.4s shows a hint instead of sending.
+  // Glow scales with input loudness
+  const glowScale = 1 + Math.min(0.25, level * 0.6);
+
   return (
     <div className="relative flex items-center">
       <AnimatePresence>
@@ -170,12 +187,24 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
       >
         {recording ? (
           <>
+            {/* Outer breathing ring */}
             <motion.span
-              className="absolute inset-0 rounded-full border-2 border-destructive/40"
-              animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+              className="absolute -inset-1 rounded-full border border-destructive/40"
+              animate={{ scale: [1, 1.5, 1], opacity: [0.55, 0, 0.55] }}
               transition={{ duration: 1.4, repeat: Infinity }}
             />
-            <Square className="w-3.5 h-3.5 fill-current" />
+            {/* Inner reactive halo driven by mic level */}
+            <motion.span
+              aria-hidden
+              className="absolute inset-0 rounded-full"
+              style={{
+                background:
+                  'radial-gradient(circle, hsl(var(--destructive)/0.45), transparent 70%)',
+                transform: `scale(${glowScale})`,
+                transition: 'transform 90ms ease-out',
+              }}
+            />
+            <Square className="w-3.5 h-3.5 fill-current relative" />
           </>
         ) : (
           <Mic className="w-4 h-4" />

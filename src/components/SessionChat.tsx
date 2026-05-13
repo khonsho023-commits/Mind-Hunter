@@ -22,6 +22,7 @@ import { useSound } from '@/context/SoundContext';
 import { loadDraft, saveDraft, loadScroll, useSessionScrollMemory } from '@/lib/sessionMemory';
 import { useEmotionalEngine } from '@/hooks/useEmotionalEngine';
 import { uploadVoiceMessage, encodeVoiceContent, encodeReflection } from '@/lib/voice/upload';
+import { generateVoiceReply, uploadAssistantVoice } from '@/lib/voice/voiceReply';
 import { shouldReflect, fetchReflection } from '@/lib/reflection';
 import type { VoiceRecording } from '@/lib/voice/recorder';
 
@@ -69,7 +70,7 @@ const REFLECTION_PROMPTS = [
 ];
 
 const SessionChat = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const sound = useSound();
   const {
     setStage, profile, currentSessionId, setCurrentSessionId,
@@ -99,7 +100,7 @@ const SessionChat = () => {
   const userScrolledRef = useRef(false);
   const reflectionSentRef = useRef(false);
   const restoredScrollRef = useRef<string | null>(null);
-  const { speak, toggle: toggleTTS, ttsEnabled } = useSpeechSynthesis({ rate: 0.88, pitch: 0.92 });
+  const { speak, toggle: toggleTTS, ttsEnabled } = useSpeechSynthesis({ rate: 0.88, pitch: 0.92, enabled: false });
 
   // Per-session draft persistence
   useEffect(() => {
@@ -401,6 +402,34 @@ const SessionChat = () => {
             sound.playMessageChime();
             speak(fullResponse);
             await saveMessage('assistant', fullResponse, currentSessionId);
+
+            // ── AI Voice Reply: shorter paraphrase + ElevenLabs TTS ──
+            (async () => {
+              try {
+                const reply = await generateVoiceReply({
+                  text: fullResponse,
+                  lang: (i18n.language || 'en').split('-')[0],
+                  emotion: emotion?.primary,
+                });
+                if (!reply || !user) return;
+                const url = await uploadAssistantVoice(reply.audioBlob, user.id);
+                if (!url) return;
+                const id = `av-${Date.now()}`;
+                const stored = encodeVoiceContent({
+                  url,
+                  duration: reply.duration,
+                  waveform: reply.waveform,
+                  transcript: reply.paraphrase,
+                });
+                setMessages((prev) => [
+                  ...prev,
+                  { id, role: 'assistant', content: stored, ts: Date.now() },
+                ]);
+                await saveMessage('assistant', stored, currentSessionId);
+              } catch (e) {
+                console.warn('voice reply', e);
+              }
+            })();
 
             // ── Reflection layer: emotionally-meaningful follow-up bubble ──
             const decision = shouldReflect(userContentForAI, emotion);

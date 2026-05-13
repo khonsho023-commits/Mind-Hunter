@@ -5,6 +5,7 @@ import { useApp, UserProfile } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import GenderSelector from '@/components/login/GenderSelector';
 
 type LoginStep = 'avatar' | 'identity' | 'anonymous-form' | 'real-form' | 'resume';
 
@@ -195,7 +196,7 @@ const LoginPage = () => {
               <div className="space-y-4">
                 <InputField label="Nickname" value={formData.nickname} onChange={v => updateField('nickname', v)} placeholder="Choose a nickname..." />
                 <InputField label="Age" value={formData.age} onChange={v => updateField('age', v)} placeholder="Your age" type="number" />
-                <SelectField label="Gender" value={formData.gender} onChange={v => updateField('gender', v)} options={['Male', 'Female', 'Non-binary', 'Prefer not to say']} />
+                <GenderSelector value={formData.gender} onChange={v => updateField('gender', v)} />
                 <InputField label="Why this nickname?" value={formData.nicknameReason} onChange={v => updateField('nicknameReason', v)} placeholder="Tell us why you chose this name..." />
               </div>
               <div className="flex gap-3 mt-6">
@@ -218,7 +219,7 @@ const LoginPage = () => {
                 {!isLogin && (
                   <>
                     <InputField label="Age" value={formData.age} onChange={v => updateField('age', v)} placeholder="Your age" type="number" />
-                    <SelectField label="Gender" value={formData.gender} onChange={v => updateField('gender', v)} options={['Male', 'Female', 'Non-binary', 'Prefer not to say']} />
+                    <GenderSelector value={formData.gender} onChange={v => updateField('gender', v)} />
                   </>
                 )}
               </div>
