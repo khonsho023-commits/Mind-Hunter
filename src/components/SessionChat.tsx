@@ -254,6 +254,7 @@ const SessionChat = () => {
       .insert({ session_id: sessionId, user_id: user.id, role, content })
       .select('id')
       .single();
+    console.log('[voice] message insertion', { role, id: data?.id ?? null, hasVoice: content.includes('\u0001VOICE\u0001') });
     return data?.id ?? null;
   };
 
