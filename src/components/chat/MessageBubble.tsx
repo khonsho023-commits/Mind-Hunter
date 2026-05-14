@@ -25,6 +25,7 @@ interface Props {
   streaming?: boolean;
   onRegenerate?: () => void;
   onDelete?: () => void;
+  autoplayVoice?: boolean;
 }
 
 const emotionTone: Record<string, string> = {
@@ -44,7 +45,7 @@ function formatBytes(bytes?: number) {
 
 function MessageBubble({
   role, content, emotion, timestamp, attachments,
-  streaming, onRegenerate, onDelete,
+  streaming, onRegenerate, onDelete, autoplayVoice,
 }: Props) {
   const isUser = role === 'user';
   const [lightbox, setLightbox] = useState<string | null>(null);
@@ -162,7 +163,13 @@ function MessageBubble({
             >
               {isVoice && voice ? (
                 <div className="flex flex-col gap-1.5">
-                  <VoicePlayer url={voice.url} duration={voice.duration} waveform={voice.waveform} />
+                  <VoicePlayer
+                    url={voice.url}
+                    duration={voice.duration}
+                    waveform={voice.waveform}
+                    pending={voice.pending}
+                    autoplay={autoplayVoice && !isUser}
+                  />
                   {voiceText && voiceText !== '[Voice message]' && (
                     <p className="text-[11px] font-ui italic text-muted-foreground/80 px-1 line-clamp-3">
                       “{voiceText}”
