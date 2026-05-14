@@ -399,7 +399,6 @@ const SessionChat = () => {
               ...prev, { role: 'assistant', content: fullResponse },
             ]);
             sound.playMessageChime();
-            speak(fullResponse);
             await saveMessage('assistant', fullResponse, currentSessionId);
 
             // ── AI Voice Reply: shorter paraphrase + ElevenLabs TTS ──
@@ -589,18 +588,6 @@ const SessionChat = () => {
             )}
           </div>
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={toggleTTS}
-              className={`p-2 rounded-lg transition-colors ${
-                ttsEnabled
-                  ? 'bg-primary/15 text-primary'
-                  : 'text-muted-foreground hover:bg-secondary/50'
-              }`}
-              title={ttsEnabled ? 'Disable voice' : 'Enable voice'}
-              aria-label="Toggle voice"
-            >
-              {ttsEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            </button>
             <button
               onClick={() => { sound.playBreathingStart(); setShowBreathing(true); }}
               className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"
