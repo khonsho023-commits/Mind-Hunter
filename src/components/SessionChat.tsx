@@ -489,17 +489,34 @@ const SessionChat = () => {
   const handleVoiceMessage = useCallback(
     async (rec: VoiceRecording, transcript: string) => {
       if (!user || !currentSessionId) return;
+      const lang = i18n.language || 'en';
       try {
-        const uploaded = await uploadVoiceMessage(rec.blob, user.id, rec.duration, rec.waveform);
-        await sendMessage(transcript, {
+        const [uploadedResult, transcriptResult] = await Promise.allSettled([
+          uploadVoiceMessage(rec.blob, user.id, rec.duration, rec.waveform),
+          transcribeVoice(rec.blob, lang),
+        ]);
+        if (uploadedResult.status === 'rejected') {
+          console.warn('[voice] upload failed', uploadedResult.reason);
+          toast.error('Voice upload failed');
+          return;
+        }
+        console.log('[voice] upload success', { url: uploadedResult.value.url, duration: uploadedResult.value.duration });
+
+        const serverTranscript = transcriptResult.status === 'fulfilled' ? transcriptResult.value : '';
+        if (transcriptResult.status === 'rejected') console.warn('[voice] STT failed', transcriptResult.reason);
+        const finalTranscript = (serverTranscript || transcript || '').trim();
+        if (finalTranscript) console.log('[voice] transcript detected', { lang, transcript: finalTranscript });
+
+        const uploaded = uploadedResult.value;
+        await sendMessage(finalTranscript, {
           url: uploaded.url, duration: uploaded.duration, waveform: uploaded.waveform,
         });
       } catch (e) {
-        console.warn('voice upload', e);
+        console.warn('[voice] upload failed', e);
         toast.error('Voice upload failed');
       }
     },
-    [user, currentSessionId, sendMessage],
+    [user, currentSessionId, i18n.language, sendMessage],
   );
 
   const onNewChat = () => {
