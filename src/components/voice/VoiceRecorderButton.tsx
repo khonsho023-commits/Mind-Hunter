@@ -64,6 +64,7 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
 
   const begin = async () => {
     if (disabled || recording) return;
+    console.log('[voice] recording started');
     cancelledRef.current = false;
     transcriptRef.current = '';
     try {
@@ -85,8 +86,10 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
           }
           if (finalText) transcriptRef.current = (transcriptRef.current + ' ' + finalText).trim();
           if (interim && !transcriptRef.current) transcriptRef.current = interim.trim();
+          const heard = (finalText || interim).trim();
+          if (heard) console.log('[voice] transcript detected', { lang: sttLang, transcript: heard });
         };
-        stt.onerror = () => { /* silent — best-effort */ };
+        stt.onerror = () => { console.log('[voice] browser STT unavailable or interrupted', { lang: sttLang }); };
         stt.onend = () => { /* may auto-stop; ok */ };
         try { stt.start(); sttRef.current = stt; } catch { /* */ }
       }
