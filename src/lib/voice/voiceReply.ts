@@ -1,7 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
 
-const URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tts-reply`;
-
 export interface VoiceReply {
   paraphrase: string;
   audioBlob: Blob;
@@ -16,29 +14,17 @@ export async function generateVoiceReply(params: {
   emotion?: string;
 }): Promise<VoiceReply | null> {
   try {
-    const r = await fetch(URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
-      body: JSON.stringify(params),
-    });
-    if (!r.ok) return null;
-    const data = await r.json();
+    const { data, error } = await supabase.functions.invoke('tts-reply', { body: params });
+    if (error) { console.warn('[voice] assistant TTS failed', error); return null; }
     if (!data?.audioBase64 || !data?.paraphrase) return null;
 
-    // Decode base64 -> Blob (binary-safe)
-    const bin = atob(data.audioBase64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    const audioBlob = new Blob([bytes], { type: data.mime || 'audio/mpeg' });
+    const audioBlob = await fetch(`data:${data.mime || 'audio/mpeg'};base64,${data.audioBase64}`).then((r) => r.blob());
 
     // Probe duration + sampled waveform from the decoded audio
     const { duration, waveform } = await analyzeAudio(audioBlob);
     return { paraphrase: data.paraphrase as string, audioBlob, duration, waveform };
   } catch (e) {
-    console.warn('generateVoiceReply', e);
+    console.warn('[voice] assistant TTS failed', e);
     return null;
   }
 }
@@ -50,7 +36,7 @@ export async function uploadAssistantVoice(
   const { error } = await supabase.storage
     .from('chat-attachments')
     .upload(path, blob, { contentType: blob.type, upsert: false });
-  if (error) { console.warn('assistant voice upload', error); return null; }
+  if (error) { console.warn('[voice] assistant voice upload failed', error); return null; }
   return supabase.storage.from('chat-attachments').getPublicUrl(path).data.publicUrl;
 }
 
