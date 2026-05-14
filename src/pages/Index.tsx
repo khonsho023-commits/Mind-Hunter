@@ -15,7 +15,6 @@ import EmergencyChat from '@/components/emergency/EmergencyChat';
 import DevVersionBadge from '@/components/ui/DevVersionBadge';
 import MemoryConstellationPage from '@/components/constellation/MemoryConstellationPage';
 import DreamscapePage from '@/components/dreamscape/DreamscapePage';
-import VoiceModePage from '@/components/voice/VoiceModePage';
 
 const renderStage = (stage: AppStage) => {
   switch (stage) {
@@ -31,7 +30,6 @@ const renderStage = (stage: AppStage) => {
     case 'emergency': return <EmergencyChat />;
     case 'constellation': return <MemoryConstellationPage />;
     case 'dreamscape': return <DreamscapePage />;
-    case 'voice': return <VoiceModePage />;
     default: return <LoginPage />;
   }
 };
