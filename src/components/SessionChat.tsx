@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, BarChart3, Wind, LayoutDashboard, Volume2, VolumeX, ArrowDown } from 'lucide-react';
+import { AlertTriangle, BarChart3, Wind, LayoutDashboard, ArrowDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useApp, EmotionState } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -17,12 +17,12 @@ import ChatSidebar from '@/components/chat/ChatSidebar';
 import ChatInput from '@/components/chat/ChatInput';
 import MessageBubble from '@/components/chat/MessageBubble';
 import TypingIndicator from '@/components/chat/TypingIndicator';
-import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 import { useSound } from '@/context/SoundContext';
 import { loadDraft, saveDraft, loadScroll, useSessionScrollMemory } from '@/lib/sessionMemory';
 import { useEmotionalEngine } from '@/hooks/useEmotionalEngine';
 import { uploadVoiceMessage, encodeVoiceContent, encodeReflection } from '@/lib/voice/upload';
 import { generateVoiceReply, uploadAssistantVoice } from '@/lib/voice/voiceReply';
+import { transcribeVoice } from '@/lib/voice/transcribe';
 import { shouldReflect, fetchReflection } from '@/lib/reflection';
 import type { VoiceRecording } from '@/lib/voice/recorder';
 
@@ -100,7 +100,6 @@ const SessionChat = () => {
   const userScrolledRef = useRef(false);
   const reflectionSentRef = useRef(false);
   const restoredScrollRef = useRef<string | null>(null);
-  const { speak, toggle: toggleTTS, ttsEnabled } = useSpeechSynthesis({ rate: 0.88, pitch: 0.92, enabled: false });
 
   // Per-session draft persistence
   useEffect(() => {
