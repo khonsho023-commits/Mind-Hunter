@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.tts-reply]
 verify_jwt = false
+
+[functions.transcribe-voice]
+verify_jwt = false
