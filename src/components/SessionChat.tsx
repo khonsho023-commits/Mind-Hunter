@@ -160,7 +160,7 @@ const SessionChat = () => {
           setMessages(display);
           setChatHistory(
             msgs
-              .filter((m) => !m.content.startsWith('\u0001REFLECT\u0001'))
+              .filter((m) => !m.content.startsWith('\u0001REFLECT\u0001') && !(m.role === 'assistant' && m.content.includes('\u0001VOICE\u0001')))
               .map((m) => {
                 // strip voice metadata so AI only sees the transcript
                 const c = m.content.split('\u0001VOICE\u0001')[0] || '[Voice message]';
@@ -313,6 +313,7 @@ const SessionChat = () => {
       };
 
       setMessages((prev) => [...prev, userMsg]);
+      if (voice) console.log('[voice] voice bubble inserted', { role: 'user', hasTranscript: !!transcript, duration: voice.duration });
       setInput('');
       setIsThinking(true);
 
@@ -403,29 +404,39 @@ const SessionChat = () => {
 
             // ── AI Voice Reply: shorter paraphrase + ElevenLabs TTS ──
             (async () => {
+              const id = `av-${Date.now()}`;
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id,
+                  role: 'assistant',
+                  content: encodeVoiceContent({ transcript: 'Generating voice reply…', duration: 0, waveform: new Array(48).fill(0.35), pending: true }),
+                  ts: Date.now(),
+                },
+              ]);
+              console.log('[voice] voice bubble inserted', { role: 'assistant', pending: true });
               try {
                 const reply = await generateVoiceReply({
                   text: fullResponse,
                   lang: (i18n.language || 'en').split('-')[0],
                   emotion: emotion?.primary,
                 });
-                if (!reply || !user) return;
+                if (!reply || !user) throw new Error('No generated TTS reply');
+                console.log('[voice] assistant TTS success', { lang: i18n.language, duration: reply.duration });
                 const url = await uploadAssistantVoice(reply.audioBlob, user.id);
-                if (!url) return;
-                const id = `av-${Date.now()}`;
+                if (!url) throw new Error('Assistant voice upload returned no URL');
                 const stored = encodeVoiceContent({
                   url,
                   duration: reply.duration,
                   waveform: reply.waveform,
                   transcript: reply.paraphrase,
                 });
-                setMessages((prev) => [
-                  ...prev,
-                  { id, role: 'assistant', content: stored, ts: Date.now() },
-                ]);
+                setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, content: stored } : m)));
                 await saveMessage('assistant', stored, currentSessionId);
+                console.log('[voice] assistant voice upload success', { url });
               } catch (e) {
-                console.warn('voice reply', e);
+                console.warn('[voice] assistant TTS failed', e);
+                setMessages((prev) => prev.filter((m) => m.id !== id));
               }
             })();
 
