@@ -4,7 +4,7 @@ import { useApp, AppStage } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import {
   LayoutDashboard, MessageCircle, BarChart3, Clock, Settings, User, ShieldAlert, LogOut,
-  Sparkles, Moon, Mic,
+  Sparkles, Moon,
 } from 'lucide-react';
 
 const NAV: { stage: AppStage; labelKey: string; icon: React.ComponentType<{ className?: string }>; emergency?: boolean }[] = [
@@ -13,7 +13,6 @@ const NAV: { stage: AppStage; labelKey: string; icon: React.ComponentType<{ clas
   { stage: 'history', labelKey: 'nav.history', icon: Clock },
   { stage: 'constellation', labelKey: 'nav.constellation', icon: Sparkles },
   { stage: 'dreamscape', labelKey: 'nav.dreamscape', icon: Moon },
-  { stage: 'voice', labelKey: 'nav.voice', icon: Mic },
   { stage: 'profile', labelKey: 'nav.profile', icon: User },
   { stage: 'settings', labelKey: 'nav.settings', icon: Settings },
   { stage: 'emergency', labelKey: 'nav.emergency', icon: ShieldAlert, emergency: true },

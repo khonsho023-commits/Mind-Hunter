@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, BarChart3, Wind, LayoutDashboard, Volume2, VolumeX, ArrowDown } from 'lucide-react';
+import { AlertTriangle, BarChart3, Wind, LayoutDashboard, ArrowDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useApp, EmotionState } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -17,12 +17,12 @@ import ChatSidebar from '@/components/chat/ChatSidebar';
 import ChatInput from '@/components/chat/ChatInput';
 import MessageBubble from '@/components/chat/MessageBubble';
 import TypingIndicator from '@/components/chat/TypingIndicator';
-import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 import { useSound } from '@/context/SoundContext';
 import { loadDraft, saveDraft, loadScroll, useSessionScrollMemory } from '@/lib/sessionMemory';
 import { useEmotionalEngine } from '@/hooks/useEmotionalEngine';
 import { uploadVoiceMessage, encodeVoiceContent, encodeReflection } from '@/lib/voice/upload';
 import { generateVoiceReply, uploadAssistantVoice } from '@/lib/voice/voiceReply';
+import { transcribeVoice } from '@/lib/voice/transcribe';
 import { shouldReflect, fetchReflection } from '@/lib/reflection';
 import type { VoiceRecording } from '@/lib/voice/recorder';
 
@@ -100,7 +100,6 @@ const SessionChat = () => {
   const userScrolledRef = useRef(false);
   const reflectionSentRef = useRef(false);
   const restoredScrollRef = useRef<string | null>(null);
-  const { speak, toggle: toggleTTS, ttsEnabled } = useSpeechSynthesis({ rate: 0.88, pitch: 0.92, enabled: false });
 
   // Per-session draft persistence
   useEffect(() => {
@@ -161,7 +160,7 @@ const SessionChat = () => {
           setMessages(display);
           setChatHistory(
             msgs
-              .filter((m) => !m.content.startsWith('\u0001REFLECT\u0001'))
+              .filter((m) => !m.content.startsWith('\u0001REFLECT\u0001') && !(m.role === 'assistant' && m.content.includes('\u0001VOICE\u0001')))
               .map((m) => {
                 // strip voice metadata so AI only sees the transcript
                 const c = m.content.split('\u0001VOICE\u0001')[0] || '[Voice message]';
@@ -255,6 +254,7 @@ const SessionChat = () => {
       .insert({ session_id: sessionId, user_id: user.id, role, content })
       .select('id')
       .single();
+    console.log('[voice] message insertion', { role, id: data?.id ?? null, hasVoice: content.includes('\u0001VOICE\u0001') });
     return data?.id ?? null;
   };
 
@@ -314,6 +314,7 @@ const SessionChat = () => {
       };
 
       setMessages((prev) => [...prev, userMsg]);
+      if (voice) console.log('[voice] voice bubble inserted', { role: 'user', hasTranscript: !!transcript, duration: voice.duration });
       setInput('');
       setIsThinking(true);
 
@@ -400,34 +401,43 @@ const SessionChat = () => {
               ...prev, { role: 'assistant', content: fullResponse },
             ]);
             sound.playMessageChime();
-            speak(fullResponse);
             await saveMessage('assistant', fullResponse, currentSessionId);
 
             // ── AI Voice Reply: shorter paraphrase + ElevenLabs TTS ──
             (async () => {
+              const id = `av-${Date.now()}`;
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id,
+                  role: 'assistant',
+                  content: encodeVoiceContent({ transcript: 'Generating voice reply…', duration: 0, waveform: new Array(48).fill(0.35), pending: true }),
+                  ts: Date.now(),
+                },
+              ]);
+              console.log('[voice] voice bubble inserted', { role: 'assistant', pending: true });
               try {
                 const reply = await generateVoiceReply({
                   text: fullResponse,
                   lang: (i18n.language || 'en').split('-')[0],
                   emotion: emotion?.primary,
                 });
-                if (!reply || !user) return;
+                if (!reply || !user) throw new Error('No generated TTS reply');
+                console.log('[voice] assistant TTS success', { lang: i18n.language, duration: reply.duration });
                 const url = await uploadAssistantVoice(reply.audioBlob, user.id);
-                if (!url) return;
-                const id = `av-${Date.now()}`;
+                if (!url) throw new Error('Assistant voice upload returned no URL');
                 const stored = encodeVoiceContent({
                   url,
                   duration: reply.duration,
                   waveform: reply.waveform,
                   transcript: reply.paraphrase,
                 });
-                setMessages((prev) => [
-                  ...prev,
-                  { id, role: 'assistant', content: stored, ts: Date.now() },
-                ]);
+                setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, content: stored } : m)));
                 await saveMessage('assistant', stored, currentSessionId);
+                console.log('[voice] assistant voice upload success', { url });
               } catch (e) {
-                console.warn('voice reply', e);
+                console.warn('[voice] assistant TTS failed', e);
+                setMessages((prev) => prev.filter((m) => m.id !== id));
               }
             })();
 
@@ -480,17 +490,34 @@ const SessionChat = () => {
   const handleVoiceMessage = useCallback(
     async (rec: VoiceRecording, transcript: string) => {
       if (!user || !currentSessionId) return;
+      const lang = i18n.language || 'en';
       try {
-        const uploaded = await uploadVoiceMessage(rec.blob, user.id, rec.duration, rec.waveform);
-        await sendMessage(transcript, {
+        const [uploadedResult, transcriptResult] = await Promise.allSettled([
+          uploadVoiceMessage(rec.blob, user.id, rec.duration, rec.waveform),
+          transcribeVoice(rec.blob, lang),
+        ]);
+        if (uploadedResult.status === 'rejected') {
+          console.warn('[voice] upload failed', uploadedResult.reason);
+          toast.error('Voice upload failed');
+          return;
+        }
+        console.log('[voice] upload success', { url: uploadedResult.value.url, duration: uploadedResult.value.duration });
+
+        const serverTranscript = transcriptResult.status === 'fulfilled' ? transcriptResult.value : '';
+        if (transcriptResult.status === 'rejected') console.warn('[voice] STT failed', transcriptResult.reason);
+        const finalTranscript = (serverTranscript || transcript || '').trim();
+        if (finalTranscript) console.log('[voice] transcript detected', { lang, transcript: finalTranscript });
+
+        const uploaded = uploadedResult.value;
+        await sendMessage(finalTranscript, {
           url: uploaded.url, duration: uploaded.duration, waveform: uploaded.waveform,
         });
       } catch (e) {
-        console.warn('voice upload', e);
+        console.warn('[voice] upload failed', e);
         toast.error('Voice upload failed');
       }
     },
-    [user, currentSessionId, sendMessage],
+    [user, currentSessionId, i18n.language, sendMessage],
   );
 
   const onNewChat = () => {
@@ -590,18 +617,6 @@ const SessionChat = () => {
             )}
           </div>
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={toggleTTS}
-              className={`p-2 rounded-lg transition-colors ${
-                ttsEnabled
-                  ? 'bg-primary/15 text-primary'
-                  : 'text-muted-foreground hover:bg-secondary/50'
-              }`}
-              title={ttsEnabled ? 'Disable voice' : 'Enable voice'}
-              aria-label="Toggle voice"
-            >
-              {ttsEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            </button>
             <button
               onClick={() => { sound.playBreathingStart(); setShowBreathing(true); }}
               className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"

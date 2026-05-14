@@ -31,8 +31,7 @@ export type AppStage =
   | 'settings'
   | 'emergency'
   | 'constellation'
-  | 'dreamscape'
-  | 'voice';
+  | 'dreamscape';
 
 interface AppContextType {
   stage: AppStage;
@@ -55,7 +54,7 @@ const AppContext = createContext<AppContextType | null>(null);
 const SESSION_KEY = 'mind-sentinel.currentSessionId';
 const STAGE_KEY = 'mind-sentinel.lastStage';
 
-const PERSISTED_STAGES: AppStage[] = ['session', 'dashboard', 'insights', 'history', 'profile', 'settings', 'constellation', 'dreamscape', 'voice'];
+const PERSISTED_STAGES: AppStage[] = ['session', 'dashboard', 'insights', 'history', 'profile', 'settings', 'constellation', 'dreamscape'];
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [stage, setStageRaw] = useState<AppStage>(() => {

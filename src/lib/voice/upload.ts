@@ -30,17 +30,18 @@ export async function uploadVoiceMessage(
 const VOICE_TAG = '\u0001VOICE\u0001';
 
 export interface VoicePayload {
-  url: string;
+  url?: string;
   duration: number;
   waveform: number[];
   transcript: string;
+  pending?: boolean;
 }
 
 export function encodeVoiceContent(p: VoicePayload): string {
   // Keep transcript as plain leading text so memory/emotion pipelines still
   // treat it like a normal user message. Metadata is appended after a marker
   // and stripped from the visible string by parseVoiceContent.
-  const meta = JSON.stringify({ url: p.url, duration: p.duration, waveform: p.waveform });
+  const meta = JSON.stringify({ url: p.url, duration: p.duration, waveform: p.waveform, pending: p.pending });
   return `${p.transcript || '[Voice message]'}${VOICE_TAG}${meta}`;
 }
 
@@ -50,7 +51,7 @@ export function parseVoiceContent(content: string): { text: string; voice: Omit<
   const text = content.slice(0, idx);
   try {
     const meta = JSON.parse(content.slice(idx + VOICE_TAG.length));
-    return { text, voice: { url: meta.url, duration: meta.duration, waveform: meta.waveform || [] } };
+    return { text, voice: { url: meta.url, duration: meta.duration || 0, waveform: meta.waveform || [], pending: !!meta.pending } };
   } catch {
     return { text, voice: null };
   }
