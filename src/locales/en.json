@@ -4,11 +4,36 @@
     "send": "Send",
     "cancel": "Cancel",
     "save": "Save",
+    "saving": "Saving…",
+    "saveChanges": "Save Changes",
+    "unsavedChanges": "Unsaved changes",
     "back": "Back",
+    "close": "Close",
+    "done": "Done",
+    "retry": "Retry",
+    "delete": "Delete",
+    "copy": "Copy",
+    "copied": "Copied",
+    "share": "Share",
+    "reply": "Reply",
+    "regenerate": "Regenerate",
     "continue": "Continue",
     "newSession": "New Session",
     "newChat": "New Chat",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "search": "Search",
+    "open": "Open",
+    "select": "Select…",
+    "yes": "Yes",
+    "no": "No",
+    "skip": "Skip",
+    "loadingShort": "Loading…",
+    "somethingWrong": "Something went wrong",
+    "untitled": "Untitled",
+    "anonymous": "Anonymous",
+    "guest": "Guest",
+    "you": "You",
+    "more": "More"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -21,6 +46,54 @@
     "profile": "Profile",
     "emergency": "Emergency",
     "startSession": "Start Session"
+  },
+  "footer": {
+    "tagline": "Mind Sentinel · A quiet companion for your inner world"
+  },
+  "brand": {
+    "title": "MIND SENTINEL",
+    "tagline": "AI Psychological Analysis Platform"
+  },
+  "login": {
+    "chooseAvatar": "Choose Your Avatar",
+    "resumeSession": "Resume Session",
+    "identityMode": "Identity Mode",
+    "anonymous": "Anonymous",
+    "anonymousDesc": "Stay private with a persona",
+    "realIdentity": "Real Identity",
+    "realIdentityDesc": "Create an account",
+    "anonymousProfile": "Anonymous Profile",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "continuePrev": "Continue Previous Session",
+    "creating": "Creating…",
+    "loading": "Loading…",
+    "enter": "Enter",
+    "resume": "Resume",
+    "noAccount": "Don't have an account? Sign up",
+    "hasAccount": "Already have an account? Sign in",
+    "fields": {
+      "nickname": "Nickname",
+      "nicknamePh": "Choose a nickname...",
+      "age": "Age",
+      "agePh": "Your age",
+      "nicknameReason": "Why this nickname?",
+      "nicknameReasonPh": "Tell us why you chose this name...",
+      "email": "Email",
+      "emailPh": "your@email.com",
+      "password": "Password",
+      "passwordPh": "••••••••"
+    },
+    "errors": {
+      "anonFailed": "Failed to create anonymous session",
+      "authFailed": "Authentication failed",
+      "loginFailed": "Login failed"
+    }
+  },
+  "gender": {
+    "label": "Select your gender",
+    "male": "Male",
+    "female": "Female"
   },
   "dashboard": {
     "morning": "Good morning",
@@ -43,7 +116,39 @@
     "recentSessions": "Recent Sessions",
     "viewAll": "View all →",
     "noSessions": "No sessions yet — start your first one.",
-    "beginNow": "Begin Now"
+    "beginNow": "Begin Now",
+    "scroll": "Scroll",
+    "heroLine1": "A sanctuary for",
+    "heroLine2": "your mind.",
+    "heroDesc": "Cinematic, AI-guided therapy sessions designed to help you understand your emotions, decode your patterns, and find calm — one breath at a time.",
+    "startSessionBtn": "Start Session",
+    "whatIs": "What is Mind Sentinel",
+    "therapy": "Therapy,",
+    "reimagined": "reimagined.",
+    "pillarsDesc": "Six pillars working together to make every session feel like a turning point.",
+    "journey": "The Journey",
+    "fromFirst": "From first word to",
+    "lastingChange": "lasting change.",
+    "step": "Step",
+    "yourSanctuary": "Your Sanctuary",
+    "snapshotLine1": "A snapshot of",
+    "snapshotLine2": "your inner world.",
+    "calm": "Calm"
+  },
+  "features": {
+    "emotion": { "title": "AI Emotion Detection", "desc": "Real-time analysis of tone, language and pattern to mirror what you feel." },
+    "voice": { "title": "Voice Therapy", "desc": "Speak naturally. Dr. Sentinel listens with warmth and unhurried presence." },
+    "crisis": { "title": "Crisis Detection", "desc": "Quietly watching for distress signals — and bringing real help when needed." },
+    "analytics": { "title": "Emotional Analytics", "desc": "See your inner weather over time, with charts that respect your privacy." },
+    "recovery": { "title": "Recovery Tracking", "desc": "Personalized milestones that celebrate small, real progress." },
+    "companion": { "title": "AI Companion Sessions", "desc": "A presence that remembers you between visits, without judgment." }
+  },
+  "timeline": {
+    "intake": { "title": "Initial Assessment", "desc": "A gentle intake — your story, your pace, your boundaries." },
+    "session": { "title": "AI Session", "desc": "Talk freely with Dr. Sentinel in a safe, immersive space." },
+    "analysis": { "title": "Emotional Analysis", "desc": "Patterns, distortions and intensity surfaced in real time." },
+    "insights": { "title": "Insights Generation", "desc": "Your emotional landscape visualized across sessions." },
+    "tracking": { "title": "Recovery Tracking", "desc": "Milestones that grow with you. Quiet, honest progress." }
   },
   "chat": {
     "placeholder": "Share what's on your mind...",
@@ -54,12 +159,102 @@
     "openEmergency": "Open Emergency Support →",
     "uploadComing": "File upload coming soon",
     "threads": "Threads",
-    "currentChat": "Current Chat"
+    "currentChat": "Current Chat",
+    "drSentinel": "Dr. Sentinel",
+    "reflection": "Reflection",
+    "dropFiles": "Drop files to attach",
+    "inputHint": "Enter to send · Shift+Enter for newline · Drop or paste files to attach",
+    "attach": "Attach file",
+    "uploading": "Uploading",
+    "ready": "Ready",
+    "uploadFailed": "Upload failed",
+    "remove": "Remove attachment",
+    "scrollToBottom": "Scroll to bottom",
+    "newMessage": "new message",
+    "newMessages": "new messages",
+    "backToDashboard": "Back to Dashboard",
+    "breathingExercise": "Breathing exercise",
+    "insightsPanel": "Insights",
+    "moodPanel": "Mood",
+    "currentState": "Current State",
+    "intensity": "Intensity",
+    "patterns": "Patterns",
+    "recommendations": "Recommendations",
+    "startAnalysis": "Send a message to start emotional analysis.",
+    "searchSessions": "Search sessions...",
+    "openSessions": "Open sessions",
+    "sessionsTitle": "Sessions",
+    "noConversations": "Your conversations will appear here",
+    "noMatches": "No matches found",
+    "newConversation": "New conversation",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "older": "Older",
+    "copyMessage": "Copy message",
+    "regenerateResponse": "Regenerate response",
+    "deleteMessage": "Delete message",
+    "shareMessage": "Share message",
+    "replyTo": "Reply",
+    "like": "Helpful",
+    "dislike": "Not helpful",
+    "toasts": {
+      "copyFailed": "Copy failed",
+      "signInToUpload": "Please sign in to upload files",
+      "unsupported": "Unsupported: {{name}}",
+      "tooLarge": "{{name}} exceeds 20MB",
+      "uploadFailedToast": "Voice upload failed",
+      "aiConnectFail": "Failed to connect to AI"
+    },
+    "reflectionPrompts": {
+      "p1": "Take a moment to notice how you're feeling right now. Has anything shifted since we started?",
+      "p2": "What's one thing you'd like to carry forward from today's session?",
+      "p3": "Let's pause for a moment. You're doing important work here.",
+      "p4": "Would you like to try a brief grounding exercise? Focus on 5 things you can see around you."
+    },
+    "breatheAction": "Breathe",
+    "greeting": {
+      "welcomeBack": "Welcome back{{name}}. It's good to see you again. I remember our previous conversations. How have you been since we last spoke?",
+      "first": "Welcome{{name}}. You're now in a safe space. I'm here to listen and help you understand your emotions better. Please share whatever is on your mind — there's no judgment here."
+    },
+    "voiceGenerating": "Generating voice reply…"
+  },
+  "lightbox": {
+    "openNewTab": "Open in new tab",
+    "close": "Close"
+  },
+  "voice": {
+    "holdToRecord": "Hold to record (tap to start, tap again to stop)",
+    "releaseToSend": "Release to send",
+    "cancelRecording": "Cancel",
+    "sendVoice": "Send voice message",
+    "holdLonger": "Hold a moment longer to record.",
+    "micUnavailable": "Microphone unavailable. Please grant access and retry.",
+    "playing": "Playing",
+    "pause": "Pause",
+    "play": "Play",
+    "generatingVoice": "Generating voice",
+    "voiceMessage": "[Voice message]",
+    "tapToSpeak": "Tap to speak",
+    "listening": "Listening…",
+    "sentinelSpeaking": "Sentinel is speaking",
+    "voiceMode": "Voice Mode",
+    "return": "Return",
+    "stopListening": "Stop listening",
+    "startListening": "Start listening",
+    "browserUnavailable": "Voice recognition unavailable in this browser.",
+    "you": "you",
+    "sentinel": "sentinel",
+    "stopVoiceInput": "Stop listening",
+    "startVoiceInput": "Start voice input"
   },
   "settings": {
     "title": "Settings",
     "subtitle": "Personalize your experience",
     "sound": "Sound",
+    "audio": "Audio",
+    "voice": "Voice",
+    "motion": "Motion & Atmosphere",
     "masterVolume": "Master Volume",
     "aiBehavior": "AI Behavior",
     "language": "Language",
@@ -67,12 +262,230 @@
     "privacy": "Privacy & Data",
     "exportData": "Export My Data",
     "deleteAll": "Delete All Sessions",
-    "account": "Account"
+    "account": "Account",
+    "tones": {
+      "friendly": "Friendly",
+      "friendlyDesc": "Warm and conversational",
+      "analytical": "Analytical",
+      "analyticalDesc": "Reflective and pattern-focused",
+      "clinical": "Clinical",
+      "clinicalDesc": "Professional and precise"
+    },
+    "motionLevels": {
+      "full": "Full",
+      "fullDesc": "Cinematic motion",
+      "reduced": "Reduced",
+      "reducedDesc": "Subtle transitions",
+      "minimal": "Minimal",
+      "minimalDesc": "Accessibility first"
+    },
+    "streamingResponses": "Streaming responses",
+    "streamingDesc": "Stream AI replies token-by-token",
+    "voiceReplies": "Voice replies",
+    "voiceRepliesDesc": "Speak AI responses out loud",
+    "speakingSpeed": "Speaking speed",
+    "testClick": "Test click",
+    "testChime": "Test chime",
+    "toasts": {
+      "exported": "Data exported",
+      "exportFailed": "Export failed",
+      "deleted": "Data deleted",
+      "toneSet": "AI tone: {{tone}}",
+      "motionSet": "Motion: {{level}}",
+      "motionFail": "Could not save motion preference"
+    },
+    "confirmDelete": "Delete all your sessions and messages? This cannot be undone."
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Your emotional AI identity",
+    "sanctuaryIdentity": "Sanctuary Identity",
+    "change": "Change",
+    "stats": {
+      "sessions": "Sessions",
+      "mood": "Mood",
+      "since": "Since"
+    },
+    "editable": "Editable Information",
+    "displayName": "Display Name",
+    "ageLabel": "Age",
+    "genderLabel": "Gender",
+    "emailLabel": "Email",
+    "accountPrivacy": "Account & Privacy",
+    "resetPassword": "Reset password",
+    "exportMyData": "Export my data",
+    "exporting": "Exporting…",
+    "signOutAction": "Sign out",
+    "deleteAllMyData": "Delete all my data",
+    "confirmDeleteTitle": "Delete all your data?",
+    "confirmDeleteDesc": "This will permanently remove your sessions, messages, and emotional history. Your account itself will remain. This cannot be undone.",
+    "confirmDeleteAction": "Yes, delete",
+    "deleting": "Deleting…",
+    "toasts": {
+      "avatarFail": "Could not save avatar",
+      "avatarUpdated": "Avatar updated",
+      "profileFail": "Failed to save profile",
+      "profileUpdated": "Profile updated",
+      "exported": "Data exported",
+      "exportFailed": "Export failed",
+      "noEmail": "No email on this account",
+      "resetFail": "Could not send reset email",
+      "resetSent": "Reset email sent",
+      "deleted": "All your data has been removed",
+      "deleteFail": "Could not delete data"
+    },
+    "validation": {
+      "required": "Required",
+      "max40": "Max 40 chars"
+    },
+    "avatar": {
+      "title": "Choose your spirit",
+      "desc": "A symbol of your inner self."
+    }
   },
   "emergency": {
     "title": "Emergency Support",
     "subtitle": "If you're in immediate danger, please reach out to a real human via the hotlines below. This space is here to help you breathe and stay grounded.",
     "immediateHelp": "Immediate Help",
-    "backToDashboard": "Back to Dashboard"
+    "backToDashboard": "Back to Dashboard",
+    "placeholder": "Share what you're feeling...",
+    "openingMessage": "You're in a safe space. I'm here to listen — there's no rush. What's happening right now?",
+    "supportive": {
+      "s1": "I hear you, and I'm here. Take a slow breath with me — you don't have to carry this alone right now.",
+      "s2": "Thank you for telling me. What you're feeling makes sense. Are you safe in this moment?",
+      "s3": "I'm staying right here with you. Can you describe one thing in the room around you?"
+    }
+  },
+  "history": {
+    "title": "History Vault",
+    "subtitle": "Navigate time to explore your conversations.",
+    "dragHint": "Drag · Scroll · Click to navigate time",
+    "allTime": "All time",
+    "selectedMoment": "Selected Moment",
+    "conversation": "conversation",
+    "conversations": "conversations",
+    "clear": "Clear",
+    "loadingMemories": "Loading memories...",
+    "noConversationsAt": "No conversations at this moment.",
+    "noMessagesYet": "No messages yet.",
+    "selectToPreview": "Select a moment to preview.",
+    "preview": "Preview",
+    "replay": "Replay",
+    "openInChat": "Open in Chat",
+    "shareMoment": "Share Moment",
+    "searchMemories": "Search memories...",
+    "noConversationsFound": "No conversations found.",
+    "reflection": "Reflection",
+    "newSession": "New session",
+    "groups": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "thisWeek": "This Week",
+      "older": "Older"
+    },
+    "replayUI": {
+      "selectToReplay": "Select a moment to replay.",
+      "loadingReplay": "Loading replay…",
+      "noMessages": "No messages to replay.",
+      "play": "Replay",
+      "pause": "Pause",
+      "keyMoments": "Key moments"
+    }
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitleShort": "Your emotional patterns over time",
+    "subtitle": "Your emotional observatory",
+    "moodTrend": "Mood Intensity Trend",
+    "spectrum": "Emotional Spectrum",
+    "weekly": "Weekly Rhythm",
+    "cognitive": "Cognitive Patterns",
+    "noPatterns": "No patterns detected yet.",
+    "aiReflections": "AI-Generated Reflections",
+    "observatory": "Emotional Observatory",
+    "dominantPattern": "Dominant pattern",
+    "intensityShift": "Intensity shift",
+    "stats": {
+      "sessions": "Sessions",
+      "avgIntensity": "Avg Intensity",
+      "activeDays": "Active Days"
+    },
+    "timeline": {
+      "title": "Emotional Timeline",
+      "hint": "Hover · Click to open",
+      "footer": "Each node is a moment in your emotional journey.",
+      "intensity": "intensity"
+    },
+    "empty": {
+      "title": "Your observatory is awakening",
+      "desc": "As you reflect through sessions, this space will reveal patterns, rhythms, and gentle insights about your inner world.",
+      "trends": "Mood trends over time",
+      "weeklyRhythm": "Weekly emotional rhythm",
+      "ai": "AI-generated reflections",
+      "cta": "Begin your first session"
+    }
+  },
+  "breathing": {
+    "guidedBreathing": "Guided Breathing",
+    "findCalm": "Find Your Calm",
+    "intro": "This exercise uses the 4-2-6 breathing technique to help reduce anxiety and promote relaxation.",
+    "inhale4": "Inhale 4s",
+    "hold2": "Hold 2s",
+    "exhale6": "Exhale 6s",
+    "begin": "Begin Exercise",
+    "endExercise": "End Exercise",
+    "phases": {
+      "inhale": "Inhale",
+      "hold": "Hold",
+      "exhale": "Exhale"
+    },
+    "cycle": "Cycle {{num}}"
+  },
+  "mood": {
+    "sessionDuration": "Session Duration",
+    "moodTrend": "Mood Trend",
+    "improving": "Improving",
+    "challenging": "Challenging",
+    "steady": "Steady",
+    "intensityOverTime": "Intensity Over Time",
+    "averageIntensity": "Average Intensity",
+    "breathingExercises": "Breathing Exercises",
+    "completed": "{{count}} completed"
+  },
+  "clinic": {
+    "sanctuaryAwaits": "Your psychological sanctuary awaits",
+    "enterClinic": "Enter Clinic",
+    "audioHint": "🔊 Click to enable immersive audio",
+    "welcomeTraveler": "Welcome, {{name}}",
+    "traveler": "traveler",
+    "scenes": {
+      "s1": "Approaching the clinic...",
+      "s2": "The door opens slowly...",
+      "s3": "Warm light fills the room...",
+      "s4": "Walking toward the therapist's office...",
+      "s5": "Taking a seat...",
+      "s6": "The session is about to begin..."
+    }
+  },
+  "interview": {
+    "title": "Initial Assessment",
+    "intro": "Hello, I'm Dr. Sentinel. I'm glad you've decided to take this step. Before we begin our sessions together, I'd like to get to know you a little better. There's no rush — just answer in whatever way feels right.",
+    "firstQuestion": "Let's start gently. How have you been feeling emotionally over the past few weeks?",
+    "placeholder": "Share your thoughts...",
+    "starting": "Starting your session...",
+    "fallback": "I appreciate you sharing that. Could you tell me a bit more about what's been on your mind lately?",
+    "enableVoice": "Enable voice",
+    "disableVoice": "Disable voice"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "network": "Network error",
+    "noPermission": "Permission denied"
+  },
+  "aria": {
+    "back": "Go back",
+    "openSessions": "Open sessions",
+    "close": "Close",
+    "sessions": "Sessions"
   }
 }
