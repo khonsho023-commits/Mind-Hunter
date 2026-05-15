@@ -16,6 +16,8 @@ export const LANGUAGES = [
   { code: 'it', label: 'Italiano', flag: '🇮🇹', dir: 'ltr' },
 ] as const;
 
+const isDev = import.meta.env.DEV;
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -34,6 +36,15 @@ i18n
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
     },
+    // Dev: surface untranslated keys instead of failing silently.
+    saveMissing: isDev,
+    missingKeyHandler: isDev
+      ? (lngs, ns, key) => {
+          // eslint-disable-next-line no-console
+          console.warn(`[i18n] Missing translation`, { lngs, ns, key });
+        }
+      : undefined,
+    returnEmptyString: false,
   });
 
 const applyDir = (lng: string) => {
@@ -41,6 +52,8 @@ const applyDir = (lng: string) => {
   if (typeof document !== 'undefined') {
     document.documentElement.dir = cfg?.dir ?? 'ltr';
     document.documentElement.lang = lng;
+    // Expose for CSS hooks (e.g. [data-dir="rtl"] selectors)
+    document.documentElement.dataset.dir = cfg?.dir ?? 'ltr';
   }
 };
 
