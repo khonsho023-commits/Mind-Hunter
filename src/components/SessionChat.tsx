@@ -761,7 +761,7 @@ const SessionChat = () => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 320, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 280, damping: 30 }}
-            className="hidden lg:flex flex-col w-80 glass-strong border-l border-border/30 p-6 overflow-y-auto"
+            className="hidden lg:flex flex-col w-80 glass-strong border-s border-border/30 p-6 overflow-y-auto"
           >
             <div className="flex gap-2 mb-5">
               <button
@@ -772,7 +772,7 @@ const SessionChat = () => {
                     : 'text-muted-foreground hover:bg-secondary/40'
                 }`}
               >
-                Insights
+                {t('chat.insightsPanel')}
               </button>
               <button
                 onClick={() => setPanelTab('mood')}
@@ -782,7 +782,7 @@ const SessionChat = () => {
                     : 'text-muted-foreground hover:bg-secondary/40'
                 }`}
               >
-                Mood
+                {t('chat.moodPanel')}
               </button>
             </div>
             {panelTab === 'mood' ? (
@@ -795,7 +795,7 @@ const SessionChat = () => {
               <div className="space-y-5">
                 <div>
                   <p className="text-[10px] font-ui tracking-[0.2em] text-muted-foreground uppercase mb-1">
-                    Current State
+                    {t('chat.currentState')}
                   </p>
                   <p className="font-display text-primary capitalize text-lg">
                     {currentEmotion.primary}
@@ -803,7 +803,7 @@ const SessionChat = () => {
                 </div>
                 <div>
                   <p className="text-[10px] font-ui tracking-[0.2em] text-muted-foreground uppercase mb-1.5">
-                    Intensity
+                    {t('chat.intensity')}
                   </p>
                   <div className="h-2 bg-secondary rounded-full overflow-hidden">
                     <motion.div
@@ -812,14 +812,14 @@ const SessionChat = () => {
                       animate={{ width: `${currentEmotion.intensity * 100}%` }}
                     />
                   </div>
-                  <p className="text-[10px] font-ui text-muted-foreground mt-1 text-right">
+                  <p className="text-[10px] font-ui text-muted-foreground mt-1 text-end">
                     {Math.round(currentEmotion.intensity * 100)}%
                   </p>
                 </div>
                 {currentEmotion.distortions.length > 0 && (
                   <div>
                     <p className="text-[10px] font-ui tracking-[0.2em] text-muted-foreground uppercase mb-2">
-                      Patterns
+                      {t('chat.patterns')}
                     </p>
                     <div className="space-y-1.5">
                       {currentEmotion.distortions.map((d) => (
@@ -836,7 +836,7 @@ const SessionChat = () => {
                 )}
                 <div>
                   <p className="text-[10px] font-ui tracking-[0.2em] text-muted-foreground uppercase mb-2">
-                    Recommendations
+                    {t('chat.recommendations')}
                   </p>
                   <div className="space-y-2">
                     {generateRecommendations(currentEmotion).slice(0, 3).map((rec, i) => (
@@ -849,7 +849,7 @@ const SessionChat = () => {
               </div>
             ) : (
               <p className="text-xs font-ui text-muted-foreground">
-                Send a message to start emotional analysis.
+                {t('chat.startAnalysis')}
               </p>
             )}
           </motion.aside>
