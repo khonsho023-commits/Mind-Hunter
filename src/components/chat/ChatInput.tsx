@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, DragEvent, ClipboardEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Paperclip, Send, X, FileText, Image as ImageIcon, Loader2, RotateCw, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import VoiceRecorderButton from '@/components/voice/VoiceRecorderButton';
 import { useAuth } from '@/context/AuthContext';
 import { uploadChatAttachment, isAccepted, UploadedAttachment } from '@/lib/uploadAttachment';
@@ -35,6 +36,7 @@ const ACCEPT = 'image/*,application/pdf,text/plain,.txt,.doc,.docx,application/m
 export default function ChatInput({
   value, onChange, onSend, onAttach, onVoice, onVoiceMessage, onMicToggle, onAttachmentsChange, disabled, placeholder,
 }: Props) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const ref = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -64,19 +66,19 @@ export default function ChatInput({
       });
       setAttachments((prev) => prev.map((a) => a.id === id ? { ...a, status: 'success', progress: 100, uploaded } : a));
     } catch (err) {
-      const msg = (err as Error).message || 'Upload failed';
+      const msg = (err as Error).message || t('chat.uploadFailed');
       setAttachments((prev) => prev.map((a) => a.id === id ? { ...a, status: 'error', error: msg } : a));
     }
   };
 
   const handleFiles = async (files: FileList | File[]) => {
     if (!user) {
-      toast.error('Please sign in to upload files');
+      toast.error(t('chat.toasts.signInToUpload'));
       return;
     }
     for (const file of Array.from(files)) {
-      if (!isAccepted(file)) { toast.error(`Unsupported: ${file.name}`); continue; }
-      if (file.size > 20 * 1024 * 1024) { toast.error(`${file.name} exceeds 20MB`); continue; }
+      if (!isAccepted(file)) { toast.error(t('chat.toasts.unsupported', { name: file.name })); continue; }
+      if (file.size > 20 * 1024 * 1024) { toast.error(t('chat.toasts.tooLarge', { name: file.name })); continue; }
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined;
       setAttachments((prev) => [...prev, { id, file, previewUrl, progress: 0, status: 'uploading' }]);
@@ -130,7 +132,7 @@ export default function ChatInput({
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 z-10 rounded-2xl border-2 border-dashed border-primary/60 bg-primary/10 flex items-center justify-center pointer-events-none backdrop-blur-sm"
             >
-              <p className="text-sm font-ui text-primary">Drop files to attach</p>
+              <p className="text-sm font-ui text-primary">{t('chat.dropFiles')}</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -177,9 +179,9 @@ export default function ChatInput({
                       a.status === 'error' ? 'text-destructive' :
                       a.status === 'success' ? 'text-primary' : 'text-muted-foreground'
                     }`}>
-                      {a.status === 'uploading' && `Uploading · ${a.progress}%`}
-                      {a.status === 'success' && 'Ready'}
-                      {a.status === 'error' && (a.error ?? 'Upload failed')}
+                      {a.status === 'uploading' && `${t('chat.uploading')} · ${a.progress}%`}
+                      {a.status === 'success' && t('chat.ready')}
+                      {a.status === 'error' && (a.error ?? t('chat.uploadFailed'))}
                     </p>
                   </div>
                 </div>
@@ -187,8 +189,8 @@ export default function ChatInput({
                   <button
                     onClick={() => uploadOne(a.id, a.file)}
                     className="p-1 rounded-md hover:bg-secondary/60 text-muted-foreground hover:text-primary"
-                    aria-label="Retry"
-                    title="Retry upload"
+                    aria-label={t('common.retry')}
+                    title={t('common.retry')}
                   >
                     <RotateCw className="w-3.5 h-3.5" />
                   </button>
@@ -196,7 +198,7 @@ export default function ChatInput({
                 <button
                   onClick={() => removeAttachment(a.id)}
                   className="p-1 rounded-md hover:bg-secondary/60 text-muted-foreground hover:text-foreground"
-                  aria-label="Remove attachment"
+                  aria-label={t('chat.remove')}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -237,8 +239,8 @@ export default function ChatInput({
           <button
             onClick={() => { onAttach(); fileInputRef.current?.click(); }}
             className="p-2.5 rounded-xl text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors flex-shrink-0"
-            title="Attach file"
-            aria-label="Attach file"
+            title={t('chat.attach')}
+            aria-label={t('chat.attach')}
           >
             <Paperclip className="w-4 h-4" />
           </button>
@@ -256,7 +258,7 @@ export default function ChatInput({
                 if (canSend) handleSend();
               }
             }}
-            placeholder={placeholder ?? 'Share what\u2019s on your mind...'}
+            placeholder={placeholder ?? t('chat.placeholder')}
             rows={1}
             className="flex-1 bg-transparent text-foreground font-ui text-sm placeholder:text-muted-foreground/50 focus:outline-none resize-none py-2.5 px-1 max-h-[200px] leading-relaxed"
           />
@@ -283,14 +285,14 @@ export default function ChatInput({
             onClick={handleSend}
             disabled={!canSend}
             className="p-3 disabled:cursor-not-allowed rounded-xl flex-shrink-0"
-            aria-label="Send"
-            title="Send"
+            aria-label={t('common.send')}
+            title={t('common.send')}
           >
             {disabled ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </motion.button>
         </motion.div>
         <p className="text-[10px] text-center text-muted-foreground/60 mt-2 font-ui">
-          Enter to send · Shift+Enter for newline · Drop or paste files to attach
+          {t('chat.inputHint')}
         </p>
       </div>
     </div>
