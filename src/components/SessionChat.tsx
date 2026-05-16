@@ -62,12 +62,12 @@ function extractTopics(messages: DisplayMessage[]): string[] {
   return Array.from(found).slice(0, 5);
 }
 
-const REFLECTION_PROMPTS = [
-  "Take a moment to notice how you're feeling right now. Has anything shifted since we started?",
-  "What's one thing you'd like to carry forward from today's session?",
-  "Let's pause for a moment. You're doing important work here.",
-  'Would you like to try a brief grounding exercise? Focus on 5 things you can see around you.',
-];
+const REFLECTION_PROMPT_KEYS = [
+  'chat.reflectionPrompts.p1',
+  'chat.reflectionPrompts.p2',
+  'chat.reflectionPrompts.p3',
+  'chat.reflectionPrompts.p4',
+] as const;
 
 const SessionChat = () => {
   const { t, i18n } = useTranslation();
@@ -190,13 +190,14 @@ const SessionChat = () => {
       if (data) setCurrentSessionId(data.id);
 
       const hasMemories = memories.length > 0;
+      const nameSuffix = profile?.nickname ? `, ${profile.nickname}` : '';
       const greeting: DisplayMessage = {
         id: 'greeting',
         role: 'assistant',
         ts: Date.now(),
         content: hasMemories
-          ? `Welcome back${profile?.nickname ? `, ${profile.nickname}` : ''}. It's good to see you again. I remember our previous conversations. How have you been since we last spoke?`
-          : `Welcome${profile?.nickname ? `, ${profile.nickname}` : ''}. You're now in a safe space. I'm here to listen and help you understand your emotions better. Please share whatever is on your mind — there's no judgment here.`,
+          ? t('chat.greeting.welcomeBack', { name: nameSuffix })
+          : t('chat.greeting.first', { name: nameSuffix }),
       };
       setMessages([greeting]);
     };
@@ -239,10 +240,10 @@ const SessionChat = () => {
     const mins = elapsed / 60000;
     if (mins > 8 && messages.length > 6 && !reflectionSentRef.current && !isThinking) {
       reflectionSentRef.current = true;
-      const prompt = REFLECTION_PROMPTS[Math.floor(Math.random() * REFLECTION_PROMPTS.length)];
-      toast(prompt, {
+      const promptKey = REFLECTION_PROMPT_KEYS[Math.floor(Math.random() * REFLECTION_PROMPT_KEYS.length)];
+      toast(t(promptKey), {
         duration: 8000,
-        action: { label: '🫁 Breathe', onClick: () => setShowBreathing(true) },
+        action: { label: `🫁 ${t('chat.breatheAction')}`, onClick: () => setShowBreathing(true) },
       });
     }
   }, [elapsed, messages.length, isThinking]);
@@ -411,7 +412,7 @@ const SessionChat = () => {
                 {
                   id,
                   role: 'assistant',
-                  content: encodeVoiceContent({ transcript: 'Generating voice reply…', duration: 0, waveform: new Array(48).fill(0.35), pending: true }),
+                  content: encodeVoiceContent({ transcript: t('chat.voiceGenerating'), duration: 0, waveform: new Array(48).fill(0.35), pending: true }),
                   ts: Date.now(),
                 },
               ]);
@@ -474,7 +475,7 @@ const SessionChat = () => {
         setIsThinking(false);
         setIsSpeaking(false);
         setStreamingId(null);
-        toast.error('Failed to connect to AI');
+        toast.error(t('chat.toasts.aiConnectFail'));
         setMessages((prev) => prev.filter((m) => m.id !== assistantId));
       }
     },
@@ -498,7 +499,7 @@ const SessionChat = () => {
         ]);
         if (uploadedResult.status === 'rejected') {
           console.warn('[voice] upload failed', uploadedResult.reason);
-          toast.error('Voice upload failed');
+          toast.error(t('chat.toasts.uploadFailedToast'));
           return;
         }
         console.log('[voice] upload success', { url: uploadedResult.value.url, duration: uploadedResult.value.duration });
@@ -514,9 +515,10 @@ const SessionChat = () => {
         });
       } catch (e) {
         console.warn('[voice] upload failed', e);
-        toast.error('Voice upload failed');
+        toast.error(t('chat.toasts.uploadFailedToast'));
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, currentSessionId, i18n.language, sendMessage],
   );
 
@@ -603,9 +605,9 @@ const SessionChat = () => {
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Sticky header */}
         <header className="glass-strong border-b border-border/40 px-4 md:px-6 py-3 flex items-center justify-between z-20 sticky top-0">
-          <div className="flex items-center gap-3 ml-12 md:ml-0 min-w-0">
+          <div className="flex items-center gap-3 ms-12 md:ms-0 min-w-0">
             <h1 className="text-sm md:text-base font-display gold-text tracking-widest font-bold truncate">
-              MIND SENTINEL
+              {t('brand.title')}
             </h1>
             <span className="text-[10px] font-ui text-muted-foreground hidden sm:inline">
               {formatTime(elapsed)}
@@ -620,27 +622,27 @@ const SessionChat = () => {
             <button
               onClick={() => { sound.playBreathingStart(); setShowBreathing(true); }}
               className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"
-              title="Breathing exercise"
-              aria-label="Breathing"
+              title={t('chat.breathingExercise')}
+              aria-label={t('chat.breathingExercise')}
             >
               <Wind className="w-4 h-4" />
             </button>
             <button
               onClick={() => { sound.playClick(); setPanelTab('insights'); setShowPanel(!showPanel); }}
               className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"
-              title="Insights"
-              aria-label="Insights"
+              title={t('chat.insightsPanel')}
+              aria-label={t('chat.insightsPanel')}
             >
               <BarChart3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => { sound.playClick(); setStage('dashboard'); }}
               className="hidden sm:inline-flex items-center text-xs px-3 py-1.5 rounded-md border border-border/60 text-foreground hover:bg-secondary/60 transition-colors font-ui"
-              title="Back to Dashboard"
-              aria-label="Back to Dashboard"
+              title={t('chat.backToDashboard')}
+              aria-label={t('chat.backToDashboard')}
             >
-              <LayoutDashboard className="w-3.5 h-3.5 mr-1.5" />
-              Back to Dashboard
+              <LayoutDashboard className="w-3.5 h-3.5 me-1.5" />
+              {t('chat.backToDashboard')}
             </button>
           </div>
         </header>
@@ -726,11 +728,11 @@ const SessionChat = () => {
                     ? 'border-primary/50 text-primary px-3.5 py-2 pr-4'
                     : 'border-primary/30 text-primary p-2.5 hover:bg-primary/15'
                 }`}
-                aria-label="Scroll to bottom"
+                aria-label={t('chat.scrollToBottom')}
               >
                 <ArrowDown className="w-4 h-4" />
                 {unread > 0 && (
-                  <span className="text-[11px] font-ui">{unread} new {unread === 1 ? 'message' : 'messages'}</span>
+                  <span className="text-[11px] font-ui">{unread} {unread === 1 ? t('chat.newMessage') : t('chat.newMessages')}</span>
                 )}
               </motion.button>
             )}
@@ -759,7 +761,7 @@ const SessionChat = () => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 320, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 280, damping: 30 }}
-            className="hidden lg:flex flex-col w-80 glass-strong border-l border-border/30 p-6 overflow-y-auto"
+            className="hidden lg:flex flex-col w-80 glass-strong border-s border-border/30 p-6 overflow-y-auto"
           >
             <div className="flex gap-2 mb-5">
               <button
@@ -770,7 +772,7 @@ const SessionChat = () => {
                     : 'text-muted-foreground hover:bg-secondary/40'
                 }`}
               >
-                Insights
+                {t('chat.insightsPanel')}
               </button>
               <button
                 onClick={() => setPanelTab('mood')}
@@ -780,7 +782,7 @@ const SessionChat = () => {
                     : 'text-muted-foreground hover:bg-secondary/40'
                 }`}
               >
-                Mood
+                {t('chat.moodPanel')}
               </button>
             </div>
             {panelTab === 'mood' ? (
@@ -793,7 +795,7 @@ const SessionChat = () => {
               <div className="space-y-5">
                 <div>
                   <p className="text-[10px] font-ui tracking-[0.2em] text-muted-foreground uppercase mb-1">
-                    Current State
+                    {t('chat.currentState')}
                   </p>
                   <p className="font-display text-primary capitalize text-lg">
                     {currentEmotion.primary}
@@ -801,7 +803,7 @@ const SessionChat = () => {
                 </div>
                 <div>
                   <p className="text-[10px] font-ui tracking-[0.2em] text-muted-foreground uppercase mb-1.5">
-                    Intensity
+                    {t('chat.intensity')}
                   </p>
                   <div className="h-2 bg-secondary rounded-full overflow-hidden">
                     <motion.div
@@ -810,14 +812,14 @@ const SessionChat = () => {
                       animate={{ width: `${currentEmotion.intensity * 100}%` }}
                     />
                   </div>
-                  <p className="text-[10px] font-ui text-muted-foreground mt-1 text-right">
+                  <p className="text-[10px] font-ui text-muted-foreground mt-1 text-end">
                     {Math.round(currentEmotion.intensity * 100)}%
                   </p>
                 </div>
                 {currentEmotion.distortions.length > 0 && (
                   <div>
                     <p className="text-[10px] font-ui tracking-[0.2em] text-muted-foreground uppercase mb-2">
-                      Patterns
+                      {t('chat.patterns')}
                     </p>
                     <div className="space-y-1.5">
                       {currentEmotion.distortions.map((d) => (
@@ -834,7 +836,7 @@ const SessionChat = () => {
                 )}
                 <div>
                   <p className="text-[10px] font-ui tracking-[0.2em] text-muted-foreground uppercase mb-2">
-                    Recommendations
+                    {t('chat.recommendations')}
                   </p>
                   <div className="space-y-2">
                     {generateRecommendations(currentEmotion).slice(0, 3).map((rec, i) => (
@@ -847,7 +849,7 @@ const SessionChat = () => {
               </div>
             ) : (
               <p className="text-xs font-ui text-muted-foreground">
-                Send a message to start emotional analysis.
+                {t('chat.startAnalysis')}
               </p>
             )}
           </motion.aside>

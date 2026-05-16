@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Waveform from './Waveform';
 
 interface Props {
@@ -13,9 +14,10 @@ interface Props {
 }
 
 export default function VoicePlayer({ url, duration, waveform, accent = 'gold', pending, autoplay }: Props) {
+  const { t } = useTranslation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
-  const [t, setT] = useState(0);
+  const [t_, setT] = useState(0);
 
   useEffect(() => {
     if (!url) return;
@@ -54,7 +56,7 @@ export default function VoicePlayer({ url, duration, waveform, accent = 'gold', 
   };
 
   const total = a_dur(audioRef.current, duration);
-  const progress = total > 0 ? Math.min(1, t / total) : 0;
+  const progress = total > 0 ? Math.min(1, t_ / total) : 0;
   const color = accent === 'gold' ? 'hsl(var(--gold))' : 'hsl(var(--foreground) / 0.65)';
 
   return (
@@ -64,9 +66,9 @@ export default function VoicePlayer({ url, duration, waveform, accent = 'gold', 
         onClick={toggle}
         disabled={pending || !url}
         className="w-9 h-9 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_16px_-4px_hsl(var(--gold)/0.5)] disabled:opacity-60 disabled:cursor-wait"
-        aria-label={pending ? 'Generating voice' : playing ? 'Pause' : 'Play'}
+        aria-label={pending ? t('voice.generatingVoice') : playing ? t('voice.pause') : t('voice.play')}
       >
-        {pending ? <span className="w-3 h-3 rounded-full bg-primary animate-pulse" /> : playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+        {pending ? <span className="w-3 h-3 rounded-full bg-primary animate-pulse" /> : playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ms-0.5" />}
       </motion.button>
       <Waveform
         values={waveform.length ? waveform : new Array(40).fill(0.4)}
@@ -79,8 +81,8 @@ export default function VoicePlayer({ url, duration, waveform, accent = 'gold', 
         className="flex-1"
         onSeek={seek}
       />
-      <span className="text-[10px] font-ui tabular-nums text-muted-foreground min-w-[34px] text-right">
-        {pending ? '…' : format(playing ? t : total)}
+      <span className="text-[10px] font-ui tabular-nums text-muted-foreground min-w-[34px] text-end">
+        {pending ? '…' : format(playing ? t_ : total)}
       </span>
     </div>
   );

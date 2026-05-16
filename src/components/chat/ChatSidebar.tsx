@@ -15,21 +15,21 @@ interface Props {
 
 const STORAGE_KEY = 'mind-sentinel.sidebar.open';
 
-type Group = 'Today' | 'Yesterday' | 'This Week' | 'Older';
+type Group = 'today' | 'yesterday' | 'thisWeek' | 'older';
 
 function groupOf(d: Date): Group {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   const ts = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
   const day = 86400000;
-  if (ts === today) return 'Today';
-  if (ts === today - day) return 'Yesterday';
-  if (ts > today - 7 * day) return 'This Week';
-  return 'Older';
+  if (ts === today) return 'today';
+  if (ts === today - day) return 'yesterday';
+  if (ts > today - 7 * day) return 'thisWeek';
+  return 'older';
 }
 
 export default function ChatSidebar({ onNewChat, refreshKey }: Props) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRtl = i18n.dir(i18n.language) === 'rtl';
   const { user } = useAuth();
   const { currentSessionId, startNewSession, openExistingSession } = useApp();
@@ -71,7 +71,7 @@ export default function ChatSidebar({ onNewChat, refreshKey }: Props) {
   const grouped = useMemo(() => {
     if (!filtered) return null;
     const buckets: Record<Group, SessionRow[]> = {
-      'Today': [], 'Yesterday': [], 'This Week': [], 'Older': [],
+      'today': [], 'yesterday': [], 'thisWeek': [], 'older': [],
     };
     for (const s of filtered) buckets[groupOf(new Date(s.started_at))].push(s);
     return (Object.entries(buckets) as [Group, SessionRow[]][]).filter(([, list]) => list.length > 0);
@@ -97,12 +97,12 @@ export default function ChatSidebar({ onNewChat, refreshKey }: Props) {
         />
         <div className="min-w-0 flex-1">
           <p className="text-xs font-ui text-foreground truncate">
-            {new Date(s.started_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {new Date(s.started_at).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })}
             {' · '}
-            {new Date(s.started_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            {new Date(s.started_at).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' })}
           </p>
           <p className="text-[10px] text-muted-foreground capitalize mt-0.5 truncate">
-            {s.summary_emotion ?? 'New conversation'}
+            {s.summary_emotion ?? t('chat.newConversation')}
             {s.summary_intensity != null && ` · ${Math.round((s.summary_intensity ?? 0) * 100)}%`}
           </p>
         </div>
@@ -123,20 +123,20 @@ export default function ChatSidebar({ onNewChat, refreshKey }: Props) {
           onClick={() => { onNewChat(); closeMobile(); }}
           className="sentinel-btn-outline w-full text-xs py-2.5 flex items-center justify-center gap-2"
         >
-          <Plus className="w-3.5 h-3.5" /> New Chat
+          <Plus className="w-3.5 h-3.5" /> {t('common.newChat')}
         </button>
         <button
           onClick={() => { startNewSession(); closeMobile(); }}
           className="sentinel-btn w-full text-xs py-2.5 flex items-center justify-center gap-2"
         >
-          <Sparkles className="w-3.5 h-3.5" /> New Session
+          <Sparkles className="w-3.5 h-3.5" /> {t('common.newSession')}
         </button>
         <div className="relative pt-1">
           <Search className={`w-3.5 h-3.5 absolute top-1/2 -translate-y-1/2 text-muted-foreground/60 ${isRtl ? 'right-3' : 'left-3'}`} />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search sessions..."
+            placeholder={t('chat.searchSessions')}
             className={`w-full bg-secondary/30 border border-border/40 rounded-lg text-xs font-ui py-2 focus:outline-none focus:border-primary/50 placeholder:text-muted-foreground/50 ${isRtl ? 'pr-9 pl-3' : 'pl-9 pr-3'}`}
           />
         </div>
@@ -155,7 +155,7 @@ export default function ChatSidebar({ onNewChat, refreshKey }: Props) {
           <div className="px-3 py-10 text-center">
             <MessageSquare className="w-6 h-6 mx-auto text-muted-foreground/40 mb-2" />
             <p className="text-xs text-muted-foreground">
-              {query ? 'No matches found' : 'Your conversations will appear here'}
+              {query ? t('chat.noMatches') : t('chat.noConversations')}
             </p>
           </div>
         )}
@@ -163,7 +163,7 @@ export default function ChatSidebar({ onNewChat, refreshKey }: Props) {
         {grouped?.map(([label, list]) => (
           <div key={label} className="mb-3">
             <p className="text-[10px] font-ui tracking-[0.25em] text-muted-foreground/80 uppercase px-3 py-2">
-              {label}
+              {t(`chat.${label}`)}
             </p>
             <div className="space-y-1">{list.map(renderSession)}</div>
           </div>
@@ -180,7 +180,7 @@ export default function ChatSidebar({ onNewChat, refreshKey }: Props) {
         className={`md:hidden fixed top-4 z-30 glass-strong p-2.5 rounded-xl border border-border/40 ${
           isRtl ? 'right-4' : 'left-4'
         }`}
-        aria-label="Open sessions"
+        aria-label={t('chat.openSessions')}
       >
         <Menu className="w-4 h-4 text-foreground" />
       </button>
@@ -214,14 +214,14 @@ export default function ChatSidebar({ onNewChat, refreshKey }: Props) {
               }`}
               role="dialog"
               aria-modal="true"
-              aria-label="Sessions"
+              aria-label={t('chat.sessionsTitle')}
             >
               <button
                 onClick={closeMobile}
                 className={`absolute top-3 p-2 rounded-lg hover:bg-secondary/50 z-10 ${
                   isRtl ? 'left-3' : 'right-3'
                 }`}
-                aria-label="Close"
+                aria-label={t('common.close')}
               >
                 <X className="w-4 h-4" />
               </button>

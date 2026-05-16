@@ -42,7 +42,8 @@ function makeSTT(lang: string): SR | null {
 }
 
 export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir(i18n.language) === 'rtl';
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [live, setLive] = useState<number[]>(Array(36).fill(0.05));
@@ -106,7 +107,7 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
       rafRef.current = requestAnimationFrame(tick);
     } catch (e) {
       console.warn('mic', e);
-      toast.error('Microphone unavailable. Please grant access and retry.');
+      toast.error(t('voice.micUnavailable'));
     }
   };
 
@@ -126,7 +127,7 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
     setRecording(false);
     if (cancelledRef.current || !rec) return;
     if (rec.duration < 0.4) {
-      toast('Hold a moment longer to record.');
+      toast(t('voice.holdLonger'));
       return;
     }
     onRecorded(rec, transcriptRef.current);
@@ -140,22 +141,22 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
       <AnimatePresence>
         {recording && (
           <motion.div
-            initial={{ opacity: 0, x: 8 }}
+            initial={{ opacity: 0, x: isRtl ? -8 : 8 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 8 }}
-            className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 glass-strong border border-destructive/30 rounded-full pl-2.5 pr-1 py-1 shadow-[0_0_24px_-6px_hsl(var(--destructive)/0.5)]"
+            exit={{ opacity: 0, x: isRtl ? -8 : 8 }}
+            className={`absolute ${isRtl ? 'left-12' : 'right-12'} top-1/2 -translate-y-1/2 flex items-center gap-2 glass-strong border border-destructive/30 rounded-full ps-2.5 pe-1 py-1 shadow-[0_0_24px_-6px_hsl(var(--destructive)/0.5)]`}
           >
             <button
               type="button"
               onClick={cancel}
               className="p-1.5 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-              aria-label="Cancel"
-              title="Cancel"
+              aria-label={t('common.cancel')}
+              title={t('common.cancel')}
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
             <Waveform values={live} active color="hsl(var(--destructive))" height={20} barWidth={2} gap={2} className="w-32" />
-            <span className="text-[11px] font-ui tabular-nums text-muted-foreground min-w-[34px] text-right">
+            <span className="text-[11px] font-ui tabular-nums text-muted-foreground min-w-[34px] text-end">
               {formatTime(elapsed)}
             </span>
             <motion.button
@@ -163,8 +164,8 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
               onClick={finish}
               whileTap={{ scale: 0.92 }}
               className="p-1.5 rounded-full bg-primary text-background"
-              aria-label="Send voice message"
-              title="Send"
+              aria-label={t('voice.sendVoice')}
+              title={t('common.send')}
             >
               <Send className="w-3.5 h-3.5" />
             </motion.button>
@@ -185,8 +186,8 @@ export default function VoiceRecorderButton({ disabled, onRecorded }: Props) {
             ? 'bg-destructive/25 border border-destructive/60 text-destructive'
             : 'glass border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/50'
         } disabled:opacity-30 disabled:cursor-not-allowed`}
-        aria-label={recording ? 'Release to send' : 'Hold to record voice'}
-        title={recording ? 'Release to send' : 'Hold to record (tap to start, tap again to stop)'}
+        aria-label={recording ? t('voice.releaseToSend') : t('voice.holdToRecord')}
+        title={recording ? t('voice.releaseToSend') : t('voice.holdToRecord')}
       >
         {recording ? (
           <>
