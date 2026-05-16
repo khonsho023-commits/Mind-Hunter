@@ -2,10 +2,12 @@ import { memo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { FileText, Image as ImageIcon, Download, Copy, Check, RotateCcw, Trash2, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { EmotionState } from '@/context/AppContext';
 import Lightbox from './Lightbox';
 import VoicePlayer from '@/components/voice/VoicePlayer';
 import { parseVoiceContent, isReflection, reflectionText } from '@/lib/voice/upload';
+import { formatTime as fmtTime } from '@/lib/locale/format';
 import { toast } from 'sonner';
 
 export interface MessageAttachment {
@@ -47,6 +49,7 @@ function MessageBubble({
   role, content, emotion, timestamp, attachments,
   streaming, onRegenerate, onDelete, autoplayVoice,
 }: Props) {
+  const { t } = useTranslation();
   const isUser = role === 'user';
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -65,7 +68,7 @@ function MessageBubble({
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch {
-      toast.error('Copy failed');
+      toast.error(t('chat.toasts.copyFailed'));
     }
   };
 
@@ -98,7 +101,7 @@ function MessageBubble({
           {!isUser && (
             <span className="text-[10px] font-ui tracking-[0.2em] uppercase text-muted-foreground inline-flex items-center gap-1.5">
               {reflection && <Sparkles className="w-2.5 h-2.5 text-primary/80" />}
-              {reflection ? 'Reflection' : 'Dr. Sentinel'}
+              {reflection ? t('chat.reflection') : t('chat.drSentinel')}
             </span>
           )}
 
@@ -188,7 +191,7 @@ function MessageBubble({
                       {streaming && (
                         <motion.span
                           aria-hidden
-                          className="inline-block w-[2px] h-[1em] bg-primary align-text-bottom ml-0.5 rounded-sm"
+                          className="inline-block w-[2px] h-[1em] bg-primary align-text-bottom ms-0.5 rounded-sm"
                           animate={{ opacity: [1, 0.2, 1] }}
                           transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
                         />
@@ -216,8 +219,8 @@ function MessageBubble({
                   <button
                     onClick={copy}
                     className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"
-                    aria-label="Copy"
-                    title="Copy message"
+                    aria-label={t('common.copy')}
+                    title={t('chat.copyMessage')}
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
@@ -225,8 +228,8 @@ function MessageBubble({
                     <button
                       onClick={onRegenerate}
                       className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"
-                      aria-label="Regenerate"
-                      title="Regenerate response"
+                      aria-label={t('common.regenerate')}
+                      title={t('chat.regenerateResponse')}
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                     </button>
@@ -235,8 +238,8 @@ function MessageBubble({
                     <button
                       onClick={onDelete}
                       className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-secondary/50 transition-colors"
-                      aria-label="Delete"
-                      title="Delete message"
+                      aria-label={t('common.delete')}
+                      title={t('chat.deleteMessage')}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -267,7 +270,7 @@ function MessageBubble({
               ))}
               {timestamp && (
                 <span className="text-[10px] font-ui text-muted-foreground/70">
-                  {new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {fmtTime(timestamp)}
                 </span>
               )}
             </div>
