@@ -605,9 +605,9 @@ const SessionChat = () => {
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Sticky header */}
         <header className="glass-strong border-b border-border/40 px-4 md:px-6 py-3 flex items-center justify-between z-20 sticky top-0">
-          <div className="flex items-center gap-3 ml-12 md:ml-0 min-w-0">
+          <div className="flex items-center gap-3 ms-12 md:ms-0 min-w-0">
             <h1 className="text-sm md:text-base font-display gold-text tracking-widest font-bold truncate">
-              MIND SENTINEL
+              {t('brand.title')}
             </h1>
             <span className="text-[10px] font-ui text-muted-foreground hidden sm:inline">
               {formatTime(elapsed)}
@@ -622,27 +622,27 @@ const SessionChat = () => {
             <button
               onClick={() => { sound.playBreathingStart(); setShowBreathing(true); }}
               className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"
-              title="Breathing exercise"
-              aria-label="Breathing"
+              title={t('chat.breathingExercise')}
+              aria-label={t('chat.breathingExercise')}
             >
               <Wind className="w-4 h-4" />
             </button>
             <button
               onClick={() => { sound.playClick(); setPanelTab('insights'); setShowPanel(!showPanel); }}
               className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-secondary/50 transition-colors"
-              title="Insights"
-              aria-label="Insights"
+              title={t('chat.insightsPanel')}
+              aria-label={t('chat.insightsPanel')}
             >
               <BarChart3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => { sound.playClick(); setStage('dashboard'); }}
               className="hidden sm:inline-flex items-center text-xs px-3 py-1.5 rounded-md border border-border/60 text-foreground hover:bg-secondary/60 transition-colors font-ui"
-              title="Back to Dashboard"
-              aria-label="Back to Dashboard"
+              title={t('chat.backToDashboard')}
+              aria-label={t('chat.backToDashboard')}
             >
-              <LayoutDashboard className="w-3.5 h-3.5 mr-1.5" />
-              Back to Dashboard
+              <LayoutDashboard className="w-3.5 h-3.5 me-1.5" />
+              {t('chat.backToDashboard')}
             </button>
           </div>
         </header>
@@ -728,11 +728,11 @@ const SessionChat = () => {
                     ? 'border-primary/50 text-primary px-3.5 py-2 pr-4'
                     : 'border-primary/30 text-primary p-2.5 hover:bg-primary/15'
                 }`}
-                aria-label="Scroll to bottom"
+                aria-label={t('chat.scrollToBottom')}
               >
                 <ArrowDown className="w-4 h-4" />
                 {unread > 0 && (
-                  <span className="text-[11px] font-ui">{unread} new {unread === 1 ? 'message' : 'messages'}</span>
+                  <span className="text-[11px] font-ui">{unread} {unread === 1 ? t('chat.newMessage') : t('chat.newMessages')}</span>
                 )}
               </motion.button>
             )}
