@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import Waveform from './Waveform';
 
 interface Props {
@@ -13,9 +14,10 @@ interface Props {
 }
 
 export default function VoicePlayer({ url, duration, waveform, accent = 'gold', pending, autoplay }: Props) {
+  const { t } = useTranslation();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
-  const [t, setT] = useState(0);
+  const [t_, setT] = useState(0);
 
   useEffect(() => {
     if (!url) return;
