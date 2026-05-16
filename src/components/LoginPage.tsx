@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import AVATARS from '@/data/avatars';
 import { useApp, UserProfile } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -10,6 +11,7 @@ import GenderSelector from '@/components/login/GenderSelector';
 type LoginStep = 'avatar' | 'identity' | 'anonymous-form' | 'real-form' | 'resume';
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const { setStage, setProfile } = useApp();
   const { signUpAnonymous, signUpWithEmail, signInWithEmail, user } = useAuth();
   const [step, setStep] = useState<LoginStep>('avatar');
@@ -25,7 +27,7 @@ const LoginPage = () => {
     setIsLoading(true);
     try {
       const anonUser = await signUpAnonymous();
-      if (!anonUser) { toast.error('Failed to create anonymous session'); return; }
+      if (!anonUser) { toast.error(t('login.errors.anonFailed')); return; }
 
       // Update profile in database
       await supabase.from('profiles').update({
@@ -48,7 +50,7 @@ const LoginPage = () => {
       });
       setStage('dashboard');
     } catch (e) {
-      toast.error('Something went wrong');
+      toast.error(t('common.somethingWrong'));
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +64,7 @@ const LoginPage = () => {
         : await signUpWithEmail(formData.email, formData.password);
 
       if (result.error) { toast.error(result.error); return; }
-      if (!result.user) { toast.error('Authentication failed'); return; }
+      if (!result.user) { toast.error(t('login.errors.authFailed')); return; }
 
       if (!isLogin) {
         await supabase.from('profiles').update({
@@ -96,7 +98,7 @@ const LoginPage = () => {
 
       setStage('dashboard');
     } catch (e) {
-      toast.error('Something went wrong');
+      toast.error(t('common.somethingWrong'));
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +109,7 @@ const LoginPage = () => {
     try {
       const result = await signInWithEmail(formData.resumeEmail, formData.resumePassword);
       if (result.error) { toast.error(result.error); return; }
-      if (!result.user) { toast.error('Login failed'); return; }
+      if (!result.user) { toast.error(t('login.errors.loginFailed')); return; }
 
       const { data: profileData } = await supabase
         .from('profiles')
@@ -128,7 +130,7 @@ const LoginPage = () => {
       }
       setStage('dashboard');
     } catch (e) {
-      toast.error('Something went wrong');
+      toast.error(t('common.somethingWrong'));
     } finally {
       setIsLoading(false);
     }
@@ -147,14 +149,14 @@ const LoginPage = () => {
 
       <motion.div className="relative z-10 w-full max-w-2xl mx-4" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
         <motion.div className="text-center mb-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-          <h1 className="text-4xl md:text-5xl font-display gold-text text-glow tracking-widest">MIND SENTINEL</h1>
-          <p className="text-muted-foreground font-ui text-sm tracking-[0.3em] mt-2 uppercase">AI Psychological Analysis Platform</p>
+          <h1 className="text-4xl md:text-5xl font-display gold-text text-glow tracking-widest">{t('brand.title')}</h1>
+          <p className="text-muted-foreground font-ui text-sm tracking-[0.3em] mt-2 uppercase">{t('brand.tagline')}</p>
         </motion.div>
 
         <AnimatePresence mode="wait">
           {step === 'avatar' && (
             <motion.div key="avatar" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className="glass rounded-2xl p-8">
-              <h2 className="text-xl font-display text-foreground mb-6 text-center">Choose Your Avatar</h2>
+              <h2 className="text-xl font-display text-foreground mb-6 text-center">{t('login.chooseAvatar')}</h2>
               <div className="grid grid-cols-5 gap-3 mb-8">
                 {AVATARS.map(av => (
                   <button key={av.id} onClick={() => setSelectedAvatar(av.id)}
@@ -165,44 +167,44 @@ const LoginPage = () => {
                 ))}
               </div>
               <div className="flex gap-3">
-                <button onClick={() => setStep('resume')} className="sentinel-btn-outline flex-1">Resume Session</button>
-                <button onClick={() => selectedAvatar && setStep('identity')} disabled={!selectedAvatar} className="sentinel-btn flex-1 disabled:opacity-30 disabled:cursor-not-allowed">Continue</button>
+                <button onClick={() => setStep('resume')} className="sentinel-btn-outline flex-1">{t('login.resumeSession')}</button>
+                <button onClick={() => selectedAvatar && setStep('identity')} disabled={!selectedAvatar} className="sentinel-btn flex-1 disabled:opacity-30 disabled:cursor-not-allowed">{t('common.continue')}</button>
               </div>
             </motion.div>
           )}
 
           {step === 'identity' && (
             <motion.div key="identity" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className="glass rounded-2xl p-8">
-              <h2 className="text-xl font-display text-foreground mb-6 text-center">Identity Mode</h2>
+              <h2 className="text-xl font-display text-foreground mb-6 text-center">{t('login.identityMode')}</h2>
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <button onClick={() => { setIdentityMode('anonymous'); setStep('anonymous-form'); }} className="glass rounded-xl p-6 text-center hover:gold-glow transition-all group">
                   <span className="text-4xl block mb-3">🎭</span>
-                  <span className="font-display text-foreground group-hover:text-primary transition-colors">Anonymous</span>
-                  <p className="text-xs font-ui text-muted-foreground mt-2">Stay private with a persona</p>
+                  <span className="font-display text-foreground group-hover:text-primary transition-colors">{t('login.anonymous')}</span>
+                  <p className="text-xs font-ui text-muted-foreground mt-2">{t('login.anonymousDesc')}</p>
                 </button>
                 <button onClick={() => { setIdentityMode('real'); setIsLogin(false); setStep('real-form'); }} className="glass rounded-xl p-6 text-center hover:gold-glow transition-all group">
                   <span className="text-4xl block mb-3">👤</span>
-                  <span className="font-display text-foreground group-hover:text-primary transition-colors">Real Identity</span>
-                  <p className="text-xs font-ui text-muted-foreground mt-2">Create an account</p>
+                  <span className="font-display text-foreground group-hover:text-primary transition-colors">{t('login.realIdentity')}</span>
+                  <p className="text-xs font-ui text-muted-foreground mt-2">{t('login.realIdentityDesc')}</p>
                 </button>
               </div>
-              <button onClick={() => setStep('avatar')} className="sentinel-btn-outline w-full">Back</button>
+              <button onClick={() => setStep('avatar')} className="sentinel-btn-outline w-full">{t('common.back')}</button>
             </motion.div>
           )}
 
           {step === 'anonymous-form' && (
             <motion.div key="anon-form" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className="glass rounded-2xl p-8">
-              <h2 className="text-xl font-display text-foreground mb-6 text-center">Anonymous Profile</h2>
+              <h2 className="text-xl font-display text-foreground mb-6 text-center">{t('login.anonymousProfile')}</h2>
               <div className="space-y-4">
-                <InputField label="Nickname" value={formData.nickname} onChange={v => updateField('nickname', v)} placeholder="Choose a nickname..." />
-                <InputField label="Age" value={formData.age} onChange={v => updateField('age', v)} placeholder="Your age" type="number" />
+                <InputField label={t('login.fields.nickname')} value={formData.nickname} onChange={v => updateField('nickname', v)} placeholder={t('login.fields.nicknamePh')} />
+                <InputField label={t('login.fields.age')} value={formData.age} onChange={v => updateField('age', v)} placeholder={t('login.fields.agePh')} type="number" />
                 <GenderSelector value={formData.gender} onChange={v => updateField('gender', v)} />
-                <InputField label="Why this nickname?" value={formData.nicknameReason} onChange={v => updateField('nicknameReason', v)} placeholder="Tell us why you chose this name..." />
+                <InputField label={t('login.fields.nicknameReason')} value={formData.nicknameReason} onChange={v => updateField('nicknameReason', v)} placeholder={t('login.fields.nicknameReasonPh')} />
               </div>
               <div className="flex gap-3 mt-6">
-                <button onClick={() => setStep('identity')} className="sentinel-btn-outline flex-1">Back</button>
+                <button onClick={() => setStep('identity')} className="sentinel-btn-outline flex-1">{t('common.back')}</button>
                 <button onClick={handleAnonymousComplete} disabled={!formData.nickname || !formData.age || isLoading} className="sentinel-btn flex-1 disabled:opacity-30">
-                  {isLoading ? 'Creating...' : 'Enter'}
+                  {isLoading ? t('login.creating') : t('login.enter')}
                 </button>
               </div>
             </motion.div>
@@ -211,41 +213,41 @@ const LoginPage = () => {
           {step === 'real-form' && (
             <motion.div key="real-form" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className="glass rounded-2xl p-8">
               <h2 className="text-xl font-display text-foreground mb-6 text-center">
-                {isLogin ? 'Sign In' : 'Create Account'}
+                {isLogin ? t('login.signIn') : t('login.createAccount')}
               </h2>
               <div className="space-y-4">
-                <InputField label="Email" value={formData.email} onChange={v => updateField('email', v)} placeholder="your@email.com" type="email" />
-                <InputField label="Password" value={formData.password} onChange={v => updateField('password', v)} placeholder="••••••••" type="password" />
+                <InputField label={t('login.fields.email')} value={formData.email} onChange={v => updateField('email', v)} placeholder={t('login.fields.emailPh')} type="email" />
+                <InputField label={t('login.fields.password')} value={formData.password} onChange={v => updateField('password', v)} placeholder={t('login.fields.passwordPh')} type="password" />
                 {!isLogin && (
                   <>
-                    <InputField label="Age" value={formData.age} onChange={v => updateField('age', v)} placeholder="Your age" type="number" />
+                    <InputField label={t('login.fields.age')} value={formData.age} onChange={v => updateField('age', v)} placeholder={t('login.fields.agePh')} type="number" />
                     <GenderSelector value={formData.gender} onChange={v => updateField('gender', v)} />
                   </>
                 )}
               </div>
               <div className="flex gap-3 mt-6">
-                <button onClick={() => setStep('identity')} className="sentinel-btn-outline flex-1">Back</button>
+                <button onClick={() => setStep('identity')} className="sentinel-btn-outline flex-1">{t('common.back')}</button>
                 <button onClick={handleRealComplete} disabled={!formData.email || !formData.password || isLoading} className="sentinel-btn flex-1 disabled:opacity-30">
-                  {isLoading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
+                  {isLoading ? t('login.loading') : isLogin ? t('login.signIn') : t('login.createAccount')}
                 </button>
               </div>
               <button onClick={() => setIsLogin(!isLogin)} className="w-full text-center text-xs font-ui text-muted-foreground mt-4 hover:text-primary transition-colors">
-                {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                {isLogin ? t('login.noAccount') : t('login.hasAccount')}
               </button>
             </motion.div>
           )}
 
           {step === 'resume' && (
             <motion.div key="resume" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} className="glass rounded-2xl p-8">
-              <h2 className="text-xl font-display text-foreground mb-6 text-center">Continue Previous Session</h2>
+              <h2 className="text-xl font-display text-foreground mb-6 text-center">{t('login.continuePrev')}</h2>
               <div className="space-y-4">
-                <InputField label="Email" value={formData.resumeEmail} onChange={v => updateField('resumeEmail', v)} placeholder="your@email.com" type="email" />
-                <InputField label="Password" value={formData.resumePassword} onChange={v => updateField('resumePassword', v)} placeholder="••••••••" type="password" />
+                <InputField label={t('login.fields.email')} value={formData.resumeEmail} onChange={v => updateField('resumeEmail', v)} placeholder={t('login.fields.emailPh')} type="email" />
+                <InputField label={t('login.fields.password')} value={formData.resumePassword} onChange={v => updateField('resumePassword', v)} placeholder={t('login.fields.passwordPh')} type="password" />
               </div>
               <div className="flex gap-3 mt-6">
-                <button onClick={() => setStep('avatar')} className="sentinel-btn-outline flex-1">Back</button>
+                <button onClick={() => setStep('avatar')} className="sentinel-btn-outline flex-1">{t('common.back')}</button>
                 <button onClick={handleResume} disabled={!formData.resumeEmail || !formData.resumePassword || isLoading} className="sentinel-btn flex-1 disabled:opacity-30">
-                  {isLoading ? 'Loading...' : 'Resume'}
+                  {isLoading ? t('login.loading') : t('login.resume')}
                 </button>
               </div>
             </motion.div>
