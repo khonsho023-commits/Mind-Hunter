@@ -62,12 +62,12 @@ function extractTopics(messages: DisplayMessage[]): string[] {
   return Array.from(found).slice(0, 5);
 }
 
-const REFLECTION_PROMPTS = [
-  "Take a moment to notice how you're feeling right now. Has anything shifted since we started?",
-  "What's one thing you'd like to carry forward from today's session?",
-  "Let's pause for a moment. You're doing important work here.",
-  'Would you like to try a brief grounding exercise? Focus on 5 things you can see around you.',
-];
+const REFLECTION_PROMPT_KEYS = [
+  'chat.reflectionPrompts.p1',
+  'chat.reflectionPrompts.p2',
+  'chat.reflectionPrompts.p3',
+  'chat.reflectionPrompts.p4',
+] as const;
 
 const SessionChat = () => {
   const { t, i18n } = useTranslation();
@@ -190,13 +190,14 @@ const SessionChat = () => {
       if (data) setCurrentSessionId(data.id);
 
       const hasMemories = memories.length > 0;
+      const nameSuffix = profile?.nickname ? `, ${profile.nickname}` : '';
       const greeting: DisplayMessage = {
         id: 'greeting',
         role: 'assistant',
         ts: Date.now(),
         content: hasMemories
-          ? `Welcome back${profile?.nickname ? `, ${profile.nickname}` : ''}. It's good to see you again. I remember our previous conversations. How have you been since we last spoke?`
-          : `Welcome${profile?.nickname ? `, ${profile.nickname}` : ''}. You're now in a safe space. I'm here to listen and help you understand your emotions better. Please share whatever is on your mind — there's no judgment here.`,
+          ? t('chat.greeting.welcomeBack', { name: nameSuffix })
+          : t('chat.greeting.first', { name: nameSuffix }),
       };
       setMessages([greeting]);
     };
@@ -239,10 +240,10 @@ const SessionChat = () => {
     const mins = elapsed / 60000;
     if (mins > 8 && messages.length > 6 && !reflectionSentRef.current && !isThinking) {
       reflectionSentRef.current = true;
-      const prompt = REFLECTION_PROMPTS[Math.floor(Math.random() * REFLECTION_PROMPTS.length)];
-      toast(prompt, {
+      const promptKey = REFLECTION_PROMPT_KEYS[Math.floor(Math.random() * REFLECTION_PROMPT_KEYS.length)];
+      toast(t(promptKey), {
         duration: 8000,
-        action: { label: '🫁 Breathe', onClick: () => setShowBreathing(true) },
+        action: { label: `🫁 ${t('chat.breatheAction')}`, onClick: () => setShowBreathing(true) },
       });
     }
   }, [elapsed, messages.length, isThinking]);
@@ -411,7 +412,7 @@ const SessionChat = () => {
                 {
                   id,
                   role: 'assistant',
-                  content: encodeVoiceContent({ transcript: 'Generating voice reply…', duration: 0, waveform: new Array(48).fill(0.35), pending: true }),
+                  content: encodeVoiceContent({ transcript: t('chat.voiceGenerating'), duration: 0, waveform: new Array(48).fill(0.35), pending: true }),
                   ts: Date.now(),
                 },
               ]);
@@ -474,7 +475,7 @@ const SessionChat = () => {
         setIsThinking(false);
         setIsSpeaking(false);
         setStreamingId(null);
-        toast.error('Failed to connect to AI');
+        toast.error(t('chat.toasts.aiConnectFail'));
         setMessages((prev) => prev.filter((m) => m.id !== assistantId));
       }
     },
@@ -498,7 +499,7 @@ const SessionChat = () => {
         ]);
         if (uploadedResult.status === 'rejected') {
           console.warn('[voice] upload failed', uploadedResult.reason);
-          toast.error('Voice upload failed');
+          toast.error(t('chat.toasts.uploadFailedToast'));
           return;
         }
         console.log('[voice] upload success', { url: uploadedResult.value.url, duration: uploadedResult.value.duration });
@@ -514,9 +515,10 @@ const SessionChat = () => {
         });
       } catch (e) {
         console.warn('[voice] upload failed', e);
-        toast.error('Voice upload failed');
+        toast.error(t('chat.toasts.uploadFailedToast'));
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, currentSessionId, i18n.language, sendMessage],
   );
 
