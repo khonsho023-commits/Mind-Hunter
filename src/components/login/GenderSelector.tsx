@@ -33,13 +33,13 @@ const OPTIONS: { value: string; labelEn: string; labelAr: string; icon: JSX.Elem
 ];
 
 export default function GenderSelector({ value, onChange }: Props) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isAr = (i18n.language || 'en').startsWith('ar');
 
   return (
     <div className="space-y-3">
       <label className="block text-sm font-ui text-muted-foreground">
-        {isAr ? 'اختر الجندر المناسب لك' : 'Select your gender'}
+        {t('gender.label')}
       </label>
       <div className="grid grid-cols-2 gap-4">
         {OPTIONS.map((opt) => {
@@ -95,7 +95,7 @@ export default function GenderSelector({ value, onChange }: Props) {
               </div>
               <div className="relative text-center">
                 <div className={`font-display text-lg ${selected ? 'gold-text' : 'text-foreground'}`}>
-                  {isAr ? opt.labelAr : opt.labelEn}
+                  {t(`gender.${opt.value.toLowerCase()}`)}
                 </div>
                 <div className="text-[10px] font-ui tracking-[0.2em] uppercase text-muted-foreground mt-0.5">
                   {isAr ? opt.labelEn : opt.labelAr}
